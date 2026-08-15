@@ -1,0 +1,52 @@
+{
+  "roles": {
+    "title": "Roles & Permissions",
+    "rolesList": "Roles",
+    "new": "New Role",
+    "name": "Role Name",
+    "description": "Description",
+    "isActive": "Active",
+    "isSystem": "System",
+    "system": "System",
+    "permissions": "Permissions",
+    "savePermissions": "Save Permissions",
+    "deleteRole": "Delete Role",
+    "selectRole": "Select a role to manage permissions",
+    "newRole": "New Role",
+    "searchRoles": "Search roles...",
+    "noRolesFound": "No roles found.",
+    "namePlaceholder": "e.g. lab_technician",
+    "nameHint": "Lowercase snake_case, e.g. \"lab_technician\".",
+    "nameFormatError": "Name must be lowercase snake_case, starting with a letter (e.g. \"lab_technician\")."
+  },
+  "permissions": {
+    "title": "Permissions",
+    "categories": {
+      "departments": "Departments",
+      "accounts": "Accounts",
+      "roles": "Roles",
+      "catalog": "Catalog",
+      "inventory": "Inventory",
+      "patients": "Patients",
+      "queue": "Queue",
+      "consultations": "Consultations",
+      "prescriptions": "Prescriptions",
+      "pharmacy": "Pharmacy",
+      "purchasing": "Purchasing",
+      "refills": "Department Refills",
+      "reports": "Reports"
+    }
+  },
+  "overrides": {
+    "title": "Permission Overrides",
+    "grant": "Grant",
+    "revoke": "Revoke",
+    "reason": "Reason",
+    "grantedBy": "Granted By",
+    "add": "Add Override",
+    "revokeAll": "Revoke All",
+    "resetToRole": "Reset to Role",
+    "copyFromRole": "Copy from Role",
+    "effectivePermissions": "Effective Permissions"
+  }
+}

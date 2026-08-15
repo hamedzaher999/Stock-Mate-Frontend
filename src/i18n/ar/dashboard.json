@@ -1,0 +1,22 @@
+{
+  "welcome": "مرحبًا، {{name}}",
+  "viewDetails": "عرض التفاصيل",
+  "quickLinks": "روابط سريعة",
+  "kpi": {
+    "unreadNotifications": "إشعارات غير مقروءة",
+    "patientsWaiting": "مرضى في الانتظار",
+    "pendingPurchaseApprovals": "طلبات شراء بانتظار الموافقة",
+    "pendingRefillApprovals": "طلبات تعبئة بانتظار الموافقة"
+  },
+  "queue": {
+    "title": "قائمة الانتظار — المرضى المنتظرون",
+    "empty": "لا يوجد مرضى في الانتظار حاليًا",
+    "noAccess": "أنت غير معين في قسم مؤهل لقائمة الانتظار."
+  },
+  "links": {
+    "patients": "المرضى",
+    "queueBoard": "لوحة الانتظار",
+    "liveStock": "المخزون الحي",
+    "purchaseRequests": "طلبات الشراء"
+  }
+}

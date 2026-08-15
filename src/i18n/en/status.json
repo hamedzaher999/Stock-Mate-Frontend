@@ -1,0 +1,99 @@
+{
+  "purchaseRequest": {
+    "draft": "Draft",
+    "pending_hospital_approval": "Pending Hospital Approval",
+    "pending_manager_approval": "Pending Manager Approval",
+    "hospital_rejected": "Hospital Rejected",
+    "manager_rejected": "Manager Rejected",
+    "preparing": "Preparing",
+    "complete": "Complete",
+    "partially_complete": "Partially Complete",
+    "cancelled": "Cancelled"
+  },
+  "refillRequest": {
+    "draft": "Draft",
+    "pending_hospital_approval": "Pending Hospital Approval",
+    "pending_manager_approval": "Pending Manager Approval",
+    "hospital_rejected": "Hospital Rejected",
+    "manager_rejected": "Manager Rejected",
+    "preparing": "Preparing",
+    "complete": "Complete",
+    "partially_complete": "Partially Complete",
+    "cancelled": "Cancelled"
+  },
+  "purchaseReceipt": {
+    "pending_confirmation": "Pending Confirmation",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled"
+  },
+  "stockCount": { "draft": "Draft", "completed": "Completed" },
+  "queue": {
+    "waiting": "Waiting",
+    "in_consultation": "In Consultation",
+    "completed": "Completed",
+    "removed": "Removed"
+  },
+  "visit": { "completed": "Completed", "cancelled": "Cancelled" },
+  "prescription": {
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "prescriptionCycle": {
+    "ready": "Ready",
+    "partially_delivered": "Partially Delivered",
+    "delivered": "Delivered",
+    "missed": "Missed",
+    "cancelled": "Cancelled"
+  },
+  "periodicSchedule": { "active": "Active", "cancelled": "Cancelled" },
+  "user": { "active": "Active", "inactive": "Inactive" },
+  "department": { "active": "Active", "inactive": "Inactive" },
+  "adjustment": {
+    "damaged": "Damaged",
+    "expired": "Expired",
+    "shrinkage": "Shrinkage",
+    "found": "Found"
+  },
+  "transaction": {
+    "purchase_receipt": "Purchase Receipt",
+    "department_transfer_out": "Transfer Out",
+    "department_transfer_in": "Transfer In",
+    "prescription_dispense": "Prescription Dispense",
+    "department_consumption": "Department Consumption",
+    "adjustment_damaged": "Adjustment - Damaged",
+    "adjustment_expired": "Adjustment - Expired",
+    "adjustment_shrinkage": "Adjustment - Shrinkage",
+    "adjustment_found": "Adjustment - Found"
+  },
+  "delivery": { "pending": "Pending", "confirmed": "Confirmed" },
+  "priority": { "normal": "Normal", "urgent": "Urgent" },
+  "material": { "consumable": "Consumable", "fixed_asset": "Fixed Asset" },
+  "department_type": {
+    "central_warehouse": "Central Warehouse",
+    "pharmacy": "Pharmacy",
+    "standard": "Standard",
+    "clinical": "Clinical",
+    "warehouse": "Warehouse",
+    "administrative": "Administrative"
+  },
+  "refillType": {
+    "normal": "Normal",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  },
+  "approvalPolicy": {
+    "auto_approved": "Auto Approved",
+    "approval_required_each_cycle": "Approval Required Each Cycle"
+  },
+  "frequency": { "day": "Daily", "week": "Weekly", "month": "Monthly" },
+  "notification": {
+    "inventory": "Inventory",
+    "queue": "Queue",
+    "pharmacy": "Pharmacy",
+    "purchasing": "Purchasing",
+    "ai_insight": "AI Insight"
+  },
+  "batchType": { "batch": "Batch", "final_batch": "Final Batch" }
+}

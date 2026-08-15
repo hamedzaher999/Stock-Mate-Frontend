@@ -1,0 +1,52 @@
+{
+  "roles": {
+    "title": "الأدوار والصلاحيات",
+    "rolesList": "الأدوار",
+    "new": "دور جديد",
+    "name": "اسم الدور",
+    "description": "الوصف",
+    "isActive": "نشط",
+    "isSystem": "نظامي",
+    "system": "نظامي",
+    "permissions": "الصلاحيات",
+    "savePermissions": "حفظ الصلاحيات",
+    "deleteRole": "حذف الدور",
+    "selectRole": "اختر دورًا لإدارة الصلاحيات",
+    "newRole": "دور جديد",
+    "searchRoles": "ابحث في الأدوار...",
+    "noRolesFound": "لم يتم العثور على أدوار.",
+    "namePlaceholder": "مثال: lab_technician",
+    "nameHint": "أحرف صغيرة وشرطات سفلية، مثال: \"lab_technician\".",
+    "nameFormatError": "يجب أن يكون الاسم بأحرف صغيرة وشرطات سفلية ويبدأ بحرف (مثال: \"lab_technician\")."
+  },
+  "permissions": {
+    "title": "الصلاحيات",
+    "categories": {
+      "departments": "الأقسام",
+      "accounts": "الحسابات",
+      "roles": "الأدوار",
+      "catalog": "الكتالوج",
+      "inventory": "المخزون",
+      "patients": "المرضى",
+      "queue": "الانتظار",
+      "consultations": "الاستشارات",
+      "prescriptions": "الوصفات",
+      "pharmacy": "الصيدلية",
+      "purchasing": "المشتريات",
+      "refills": "طلبات التعبئة",
+      "reports": "التقارير"
+    }
+  },
+  "overrides": {
+    "title": "تجاوزات الصلاحيات",
+    "grant": "منح",
+    "revoke": "سحب",
+    "reason": "السبب",
+    "grantedBy": "منح بواسطة",
+    "add": "إضافة تجاوز",
+    "revokeAll": "سحب الكل",
+    "resetToRole": "إعادة إلى الدور",
+    "copyFromRole": "نسخ من دور",
+    "effectivePermissions": "الصلاحيات الفعلية"
+  }
+}

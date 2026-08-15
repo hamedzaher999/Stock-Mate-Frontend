@@ -1,0 +1,99 @@
+{
+  "purchaseRequest": {
+    "draft": "مسودة",
+    "pending_hospital_approval": "بانتظار موافقة المستشفى",
+    "pending_manager_approval": "بانتظار موافقة المدير",
+    "hospital_rejected": "مرفوض من المستشفى",
+    "manager_rejected": "مرفوض من المدير",
+    "preparing": "قيد التحضير",
+    "complete": "مكتمل",
+    "partially_complete": "مكتمل جزئيًا",
+    "cancelled": "ملغى"
+  },
+  "refillRequest": {
+    "draft": "مسودة",
+    "pending_hospital_approval": "بانتظار موافقة المستشفى",
+    "pending_manager_approval": "بانتظار موافقة المدير",
+    "hospital_rejected": "مرفوض من المستشفى",
+    "manager_rejected": "مرفوض من المدير",
+    "preparing": "قيد التحضير",
+    "complete": "مكتمل",
+    "partially_complete": "مكتمل جزئيًا",
+    "cancelled": "ملغى"
+  },
+  "purchaseReceipt": {
+    "pending_confirmation": "بانتظار التأكيد",
+    "confirmed": "مؤكد",
+    "cancelled": "ملغى"
+  },
+  "stockCount": { "draft": "مسودة", "completed": "مكتمل" },
+  "queue": {
+    "waiting": "في الانتظار",
+    "in_consultation": "في الاستشارة",
+    "completed": "مكتمل",
+    "removed": "تمت إزالته"
+  },
+  "visit": { "completed": "مكتملة", "cancelled": "ملغاة" },
+  "prescription": {
+    "active": "نشطة",
+    "completed": "مكتملة",
+    "cancelled": "ملغاة"
+  },
+  "prescriptionCycle": {
+    "ready": "جاهز",
+    "partially_delivered": "تم التسليم جزئيًا",
+    "delivered": "تم التسليم",
+    "missed": "فائت",
+    "cancelled": "ملغى"
+  },
+  "periodicSchedule": { "active": "نشط", "cancelled": "ملغى" },
+  "user": { "active": "نشط", "inactive": "غير نشط" },
+  "department": { "active": "نشط", "inactive": "غير نشط" },
+  "adjustment": {
+    "damaged": "تالف",
+    "expired": "منتهي الصلاحية",
+    "shrinkage": "عجز",
+    "found": "تم العثور عليه"
+  },
+  "transaction": {
+    "purchase_receipt": "إيصال شراء",
+    "department_transfer_out": "تحويل صادر",
+    "department_transfer_in": "تحويل وارد",
+    "prescription_dispense": "صرف وصفة طبية",
+    "department_consumption": "استهلاك",
+    "adjustment_damaged": "تسوية - تالف",
+    "adjustment_expired": "تسوية - منتهي الصلاحية",
+    "adjustment_shrinkage": "تسوية - عجز",
+    "adjustment_found": "تسوية - تم العثور عليه"
+  },
+  "delivery": { "pending": "بانتظار التأكيد", "confirmed": "مؤكد" },
+  "priority": { "normal": "عادي", "urgent": "عاجل" },
+  "material": { "consumable": "مستهلك", "fixed_asset": "أصل ثابت" },
+  "department_type": {
+    "central_warehouse": "مستودع مركزي",
+    "pharmacy": "صيدلية",
+    "standard": "عادي",
+    "clinical": "سريري",
+    "warehouse": "مستودع",
+    "administrative": "إداري"
+  },
+  "refillType": {
+    "normal": "عادي",
+    "daily": "يومي",
+    "weekly": "أسبوعي",
+    "monthly": "شهري"
+  },
+  "approvalPolicy": {
+    "auto_approved": "موافقة تلقائية",
+    "approval_required_each_cycle": "تتطلب موافقة في كل دورة"
+  },
+  "frequency": { "day": "يومي", "week": "أسبوعي", "month": "شهري" },
+  "notification": {
+    "inventory": "المخزون",
+    "queue": "قائمة الانتظار",
+    "pharmacy": "الصيدلية",
+    "purchasing": "المشتريات",
+    "ai_insight": "رؤى الذكاء الاصطناعي"
+  },
+  "batchType": { "batch": "دفعة", "final_batch": "دفعة نهائية" }
+}

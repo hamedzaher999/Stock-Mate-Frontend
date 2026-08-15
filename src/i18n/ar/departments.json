@@ -1,0 +1,29 @@
+{
+  "title": "الأقسام",
+  "new": "قسم جديد",
+  "addDepartment": "إضافة قسم",
+  "fields": {
+    "name": "الاسم",
+    "type": "النوع",
+    "manager": "المدير",
+    "hasQueue": "يملك قائمة انتظار",
+    "isActive": "نشط",
+    "created": "تاريخ الإنشاء"
+  },
+  "types": {
+    "central_warehouse": "المستودع المركزي",
+    "pharmacy": "الصيدلية",
+    "standard": "عادي",
+    "clinical": "سريري",
+    "warehouse": "مستودع",
+    "administrative": "إداري"
+  },
+  "actions": {
+    "setManager": "تعيين مدير",
+    "activate": "تفعيل",
+    "deactivate": "تعطيل"
+  },
+  "errors": {
+    "singletonExists": "يمكن وجود قسم {{type}} واحد فقط"
+  }
+}

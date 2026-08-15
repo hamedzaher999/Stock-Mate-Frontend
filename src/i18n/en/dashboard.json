@@ -1,0 +1,22 @@
+{
+  "welcome": "Welcome, {{name}}",
+  "viewDetails": "View details",
+  "quickLinks": "Quick Links",
+  "kpi": {
+    "unreadNotifications": "Unread Notifications",
+    "patientsWaiting": "Patients Waiting",
+    "pendingPurchaseApprovals": "Pending Purchase Approvals",
+    "pendingRefillApprovals": "Pending Refill Approvals"
+  },
+  "queue": {
+    "title": "Queue – Waiting Patients",
+    "empty": "No patients currently waiting",
+    "noAccess": "Not assigned to an eligible department for the queue."
+  },
+  "links": {
+    "patients": "Patients",
+    "queueBoard": "Queue Board",
+    "liveStock": "Live Stock",
+    "purchaseRequests": "Purchase Requests"
+  }
+}

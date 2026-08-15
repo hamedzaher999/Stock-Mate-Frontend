@@ -1,0 +1,50 @@
+{
+  "title": "Catalog",
+  "products": {
+    "title": "Products",
+    "tab": "Products",
+    "new": "New Product",
+    "addProduct": "Add Product",
+    "name": "Product Name",
+    "category": "Category",
+    "type": "Material Type",
+    "description": "Description",
+    "active": "Active",
+    "status": "Status",
+    "selectCategory": "Select category"
+  },
+  "variants": {
+    "title": "Variants",
+    "new": "New Variant",
+    "name": "Variant Name",
+    "sku": "SKU",
+    "unit": "Unit",
+    "product": "Product",
+    "suppliers": "Suppliers",
+    "preferred": "Preferred",
+    "expectedPrice": "Expected Price",
+    "supplierCode": "Supplier Code",
+    "tab": "Variants",
+    "variantName": "Variant Name",
+    "status": "Status",
+    "addVariant": "Add Variant",
+    "selectProduct": "Select product...",
+    "selectUnit": "Select unit...",
+    "allFieldsRequired": "All fields are required"
+  },
+  "units": {
+    "title": "Units",
+    "tab": "Units",
+    "new": "New Unit",
+    "name": "Name",
+    "abbreviation": "Abbreviation"
+  },
+  "categories": {
+    "title": "Categories",
+    "tab": "Categories",
+    "new": "New Category",
+    "name": "Name",
+    "parent": "Parent Category",
+    "children": "Subcategories"
+  }
+}

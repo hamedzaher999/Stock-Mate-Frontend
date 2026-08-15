@@ -1,0 +1,108 @@
+{
+  "app": {
+    "name": "نظام إدارة مستشفى الهلال الأحمر",
+    "tagline": "نظام إدارة المستشفى"
+  },
+  "filters": {
+    "all": "الكل",
+    "allStatuses": "كل الحالات",
+    "allDepartments": "كل الأقسام",
+    "allTypes": "كل الأنواع"
+  },
+  "actions": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "print": "طباعة",
+    "submit": "إرسال",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "close": "إغلاق",
+    "view": "عرض",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "refresh": "تحديث",
+    "reset": "إعادة تعيين",
+    "clear": "مسح",
+    "upload": "رفع",
+    "download": "تنزيل",
+    "select": "اختيار",
+    "deselect": "إلغاء الاختيار",
+    "activate": "تفعيل",
+    "deactivate": "تعطيل",
+    "copy": "نسخ",
+    "logout": "تسجيل الخروج",
+    "logoutAll": "تسجيل الخروج من جميع الأجهزة",
+    "recordAnother": "تسجيل آخر",
+    "notFound": "غير موجود"
+  },
+  "table": {
+    "noData": "لا توجد سجلات",
+    "loading": "جارٍ التحميل...",
+    "showing": "عرض {{from}}-{{to}} من {{total}} سجل",
+    "rowsPerPage": "صفوف في الصفحة",
+    "page": "صفحة"
+  },
+  "pagination": {
+    "first": "الأولى",
+    "last": "الأخيرة",
+    "next": "التالي",
+    "prev": "السابق"
+  },
+  "form": {
+    "required": "هذا الحقل مطلوب",
+    "invalid": "قيمة غير صالحة",
+    "tooShort": "قصير جدًا (الحد الأدنى {{min}} حرف)",
+    "tooLong": "طويل جدًا (الحد الأقصى {{max}} حرف)",
+    "invalidEmail": "بريد إلكتروني غير صالح",
+    "invalidPhone": "رقم هاتف غير صالح",
+    "minValue": "الحد الأدنى للقيمة هو {{min}}",
+    "maxValue": "الحد الأقصى للقيمة هو {{max}}"
+  },
+  "status": { "active": "نشط", "inactive": "غير نشط" },
+  "loading": "جارٍ التحميل...",
+  "error": "حدث خطأ ما",
+  "retry": "إعادة المحاولة",
+  "confirm_delete": "هل أنت متأكد من الحذف؟",
+  "yes": "نعم",
+  "no": "لا",
+  "date": { "today": "اليوم", "yesterday": "أمس", "thisWeek": "هذا الأسبوع" },
+  "empty": {
+    "title": "لا توجد نتائج",
+    "description": "لا توجد عناصر تطابق بحثك."
+  },
+  "currency": { "ILS": "₪", "USD": "$" },
+  "notFound": "الصفحة غير موجودة",
+  "forbidden": "ليست لديك صلاحية عرض هذه الصفحة",
+  "unknownError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+  "title": "الأقسام",
+  "addDepartment": "إضافة قسم",
+  "new": "جديد",
+  "typeNotEditable": "لا يمكن تغيير النوع بعد الإنشاء.",
+  "selectManager": "اختر المدير...",
+  "noManager": "بدون مدير",
+  "fields": {
+    "name": "الاسم",
+    "type": "النوع",
+    "manager": "المدير",
+    "isActive": "نشط",
+    "created": "تاريخ الإنشاء"
+  },
+  "types": {
+    "central_warehouse": "المستودع المركزي",
+    "pharmacy": "الصيدلية",
+    "standard": "عادي",
+    "clinical": "سريري",
+    "warehouse": "مستودع",
+    "administrative": "إداري"
+  }
+}

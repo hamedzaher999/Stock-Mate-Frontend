@@ -1,0 +1,33 @@
+{
+  "dispenseQueue": {
+    "title": "قائمة الصرف",
+    "lookup": "البحث عن مريض",
+    "nationalId": "الرقم الوطني",
+    "familyBookNumber": "رقم دفتر العائلة",
+    "medicationSummary": "الأدوية",
+    "readySince": "جاهز منذ",
+    "cycleNumber": "الدورة #",
+    "dispense": "صرف",
+    "patient": "المريض",
+    "nationalIdCol": "الرقم الوطني",
+    "meds": "الأدوية",
+    "ready": "جاهز منذ",
+    "enterValue": "أدخل القيمة...",
+    "search": "بحث",
+    "noResults": "لا توجد نتائج."
+  },
+  "dispense": {
+    "title": "صرف الوصفة",
+    "prescribedQty": "الكمية الموصوفة",
+    "dispensedQty": "تم صرفه سابقاً",
+    "remaining": "المتبقي",
+    "toDispense": "الكمية للصرف",
+    "notes": "ملاحظات",
+    "submit": "تأكيد الصرف",
+    "batchInfo": "تخصيص الدفعات تلقائي (FEFO)",
+    "patient": "المريض",
+    "prescribed": "موصوف",
+    "dispensed": "تم صرفه",
+    "errorDispensing": "خطأ في الصرف"
+  }
+}

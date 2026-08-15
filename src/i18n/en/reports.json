@@ -1,0 +1,68 @@
+{
+  "exportExcel": "Export to Excel",
+  "trend": "Trend",
+  "byDepartment": "By Department",
+  "noData": "No data for the selected filters.",
+
+  "tabs": {
+    "movement": "Inventory Movement",
+    "adjustments": "Adjustments",
+    "visits": "Patient Visits"
+  },
+
+  "filters": {
+    "from": "From",
+    "to": "To",
+    "department": "Department",
+    "allDepartments": "All departments",
+    "material": "Material",
+    "allMaterials": "All materials",
+    "type": "Type",
+    "allTypes": "All types",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "all": "All"
+  },
+
+  "columns": {
+    "date": "Date",
+    "type": "Type",
+    "material": "Material",
+    "department": "Department",
+    "batch": "Batch",
+    "quantity": "Quantity",
+    "balanceAfter": "Balance After",
+    "reportedBy": "Reported By",
+    "performedBy": "Performed By",
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "status": "Status",
+    "count": "Count"
+  },
+
+  "movement": {
+    "title": "Inventory Movement Report",
+    "subtitle": "Stock transactions across departments over time",
+    "totalTransactions": "Total Transactions",
+    "quantityIn": "Quantity In",
+    "quantityOut": "Quantity Out",
+    "netQuantity": "Net Quantity"
+  },
+
+  "adjustments": {
+    "title": "Adjustments Report",
+    "subtitle": "Damaged, expired, shrinkage, and found stock adjustments",
+    "totalAdjustments": "Total Adjustments",
+    "totalQuantity": "Total Quantity",
+    "increased": "Increased",
+    "decreased": "Decreased"
+  },
+
+  "visits": {
+    "title": "Patient Visits Report",
+    "subtitle": "Medical visit activity across departments",
+    "totalVisits": "Total Visits",
+    "uniquePatients": "Unique Patients",
+    "visitCount": "Visit Count"
+  }
+}

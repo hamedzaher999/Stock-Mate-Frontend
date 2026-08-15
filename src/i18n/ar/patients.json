@@ -1,0 +1,26 @@
+{
+  "title": "المرضى",
+  "register": "تسجيل مريض",
+  "profile": "ملف المريض",
+  "fields": {
+    "fullName": "الاسم الكامل",
+    "nationalId": "الرقم الوطني",
+    "familyBookNumber": "رقم دفتر العائلة",
+    "patientId": "رقم المريض",
+    "registeredBy": "سجله",
+    "registeredAt": "تاريخ التسجيل"
+  },
+  "lookup": {
+    "title": "البحث عن مريض",
+    "placeholder": "ابحث بالاسم أو الرقم الوطني أو رقم المريض"
+  },
+  "history": { "title": "تاريخ المريض", "noVisits": "لا توجد زيارات مسجلة" },
+  "errors": { "duplicate": "المريض مسجل مسبقًا. استخدم البحث بدلًا من ذلك." },
+  "search": { "placeholder": "ابحث بالاسم أو الرقم الوطني أو رقم المريض" },
+  "tabs": {
+    "info": "المعلومات",
+    "visits": "تاريخ الزيارات",
+    "prescriptions": "الوصفات"
+  },
+  "form": { "required": "هذا الحقل مطلوب" }
+}

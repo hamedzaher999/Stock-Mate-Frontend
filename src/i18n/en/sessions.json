@@ -1,0 +1,26 @@
+{
+  "empty": "No active sessions",
+  "unknownDevice": "Unknown device",
+  "currentSession": "This device",
+  "expired": "Expired",
+  "platformWeb": "Web",
+  "platformMobile": "Mobile",
+  "signedIn": "Signed in",
+  "revoke": "Revoke",
+  "mySessions": {
+    "title": "My Sessions",
+    "subtitle": "Devices currently signed in to your account",
+    "empty": "You have no other active sessions",
+    "logoutAll": "Log out all devices",
+    "logoutAllTitle": "Log out from all devices?",
+    "logoutAllConfirm": "This will end all your active sessions, including this one, and you will need to sign in again."
+  },
+  "userSessions": {
+    "title": "Active Sessions",
+    "empty": "This user has no active sessions",
+    "viewingOwnHint": "You are viewing your own sessions.",
+    "revokeAll": "Revoke all sessions",
+    "revokeAllTitle": "Revoke all sessions?",
+    "revokeAllConfirm": "This will immediately sign this user out of every device."
+  }
+}

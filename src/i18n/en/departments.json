@@ -1,0 +1,27 @@
+{
+  "title": "Departments",
+  "new": "New Department",
+  "addDepartment": "Add Department",
+  "fields": {
+    "name": "Name",
+    "type": "Type",
+    "manager": "Manager",
+    "hasQueue": "Has Patient Queue",
+    "isActive": "Active",
+    "created": "Created"
+  },
+  "types": {
+    "central_warehouse": "Central Warehouse",
+    "pharmacy": "Pharmacy",
+    "standard": "Standard",
+    "clinical": "Clinical",
+    "warehouse": "Warehouse",
+    "administrative": "Administrative"
+  },
+  "actions": {
+    "setManager": "Set Manager",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
+  },
+  "errors": { "singletonExists": "Only one {{type}} department may exist" }
+}

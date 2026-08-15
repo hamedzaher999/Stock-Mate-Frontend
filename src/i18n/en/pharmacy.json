@@ -1,0 +1,33 @@
+{
+  "dispenseQueue": {
+    "title": "Dispense Queue",
+    "lookup": "Patient Lookup",
+    "nationalId": "National ID",
+    "familyBookNumber": "Family Book Number",
+    "medicationSummary": "Medications",
+    "readySince": "Ready Since",
+    "cycleNumber": "Cycle #",
+    "dispense": "Dispense",
+    "patient": "Patient",
+    "nationalIdCol": "National ID",
+    "meds": "Medications",
+    "ready": "Ready Since",
+    "enterValue": "Enter value...",
+    "search": "Search",
+    "noResults": "No results found."
+  },
+  "dispense": {
+    "title": "Dispense Prescription",
+    "prescribedQty": "Prescribed Qty",
+    "dispensedQty": "Already Dispensed",
+    "remaining": "Remaining",
+    "toDispense": "Quantity to dispense",
+    "notes": "Notes",
+    "submit": "Confirm Dispense",
+    "batchInfo": "Batch allocation is automatic (FEFO)",
+    "patient": "Patient",
+    "prescribed": "Prescribed",
+    "dispensed": "Dispensed",
+    "errorDispensing": "Error dispensing"
+  }
+}

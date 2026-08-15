@@ -1,0 +1,15 @@
+{
+  "title": "الموردون",
+  "new": "مورد جديد",
+  "addSupplier": "إضافة مورد",
+  "editSupplier": "تعديل المورد",
+  "fields": {
+    "name": "الاسم",
+    "contactPerson": "جهة الاتصال",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "isActive": "نشط"
+  },
+  "variants": "المواد الموردة"
+}

@@ -1,0 +1,112 @@
+{
+  "app": {
+    "name": "Red Crescent HMS",
+    "tagline": "Hospital Management System"
+  },
+  "filters": {
+    "all": "All",
+    "allStatuses": "All statuses",
+    "allDepartments": "All departments",
+    "allTypes": "All types"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "print": "Print",
+    "submit": "Submit",
+    "approve": "Approve",
+    "reject": "Reject",
+    "close": "Close",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "refresh": "Refresh",
+    "reset": "Reset",
+    "clear": "Clear",
+    "upload": "Upload",
+    "download": "Download",
+    "select": "Select",
+    "deselect": "Deselect",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "copy": "Copy",
+    "logout": "Sign Out",
+    "logoutAll": "Sign Out All Devices",
+    "recordAnother": "Record Another",
+    "notFound": "Not found"
+  },
+  "table": {
+    "noData": "No records found",
+    "loading": "Loading...",
+    "showing": "Showing {{from}}-{{to}} of {{total}} records",
+    "rowsPerPage": "Rows per page",
+    "page": "Page"
+  },
+  "pagination": {
+    "first": "First",
+    "last": "Last",
+    "next": "Next",
+    "prev": "Previous"
+  },
+  "form": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "tooShort": "Too short (min {{min}} chars)",
+    "tooLong": "Too long (max {{max}} chars)",
+    "invalidEmail": "Invalid email address",
+    "invalidPhone": "Invalid phone number",
+    "minValue": "Minimum value is {{min}}",
+    "maxValue": "Maximum value is {{max}}"
+  },
+  "status": { "active": "Active", "inactive": "Inactive" },
+  "loading": "Loading...",
+  "error": "Something went wrong",
+  "retry": "Retry",
+  "confirm_delete": "Are you sure you want to delete this?",
+  "yes": "Yes",
+  "no": "No",
+  "date": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week"
+  },
+  "empty": {
+    "title": "No results",
+    "description": "No items match your search."
+  },
+  "currency": { "ILS": "₪", "USD": "$" },
+  "notFound": "Page not found",
+  "forbidden": "You don't have permission to view this page",
+  "unknownError": "An unexpected error occurred. Please try again.",
+  "title": "Departments",
+  "addDepartment": "Add Department",
+  "new": "New",
+  "typeNotEditable": "Type cannot be changed after creation.",
+  "selectManager": "Select manager...",
+  "noManager": "No manager",
+  "fields": {
+    "name": "Name",
+    "type": "Type",
+    "manager": "Manager",
+    "isActive": "Active",
+    "created": "Created"
+  },
+  "types": {
+    "central_warehouse": "Central Warehouse",
+    "pharmacy": "Pharmacy",
+    "standard": "Standard",
+    "clinical": "Clinical",
+    "warehouse": "Warehouse",
+    "administrative": "Administrative"
+  }
+}

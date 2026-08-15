@@ -1,0 +1,29 @@
+{
+  "title": "Settings & Appearance",
+  "subtitle": "Customize the application appearance",
+  "appearance": "Appearance",
+  "language": "Language",
+  "primaryColor": "Primary Color",
+  "themeColor": "Theme Color",
+  "custom": "Custom",
+  "fontSize": "Base Font Size",
+  "borderRadius": "Border Radius",
+  "density": "Density",
+  "compact": "Compact",
+  "comfortable": "Comfortable",
+  "currency": "Currency",
+  "regional": "Regional",
+  "darkMode": "Dark Mode",
+  "saved": "Settings saved",
+  "reset": "Reset to Defaults",
+  "en": "English",
+  "ar": "Arabic (عربي)",
+  "fontSizes": { "sm": "SM", "base": "Base", "lg": "LG", "xl": "XL" },
+  "radiusLabels": {
+    "none": "None",
+    "sm": "SM",
+    "md": "MD",
+    "lg": "LG",
+    "full": "Full"
+  }
+}

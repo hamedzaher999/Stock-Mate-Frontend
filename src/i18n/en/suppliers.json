@@ -1,0 +1,15 @@
+{
+  "title": "Suppliers",
+  "new": "New Supplier",
+  "addSupplier": "Add Supplier",
+  "editSupplier": "Edit Supplier",
+  "fields": {
+    "name": "Name",
+    "contactPerson": "Contact Person",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "isActive": "Active"
+  },
+  "variants": "Supplied Materials"
+}

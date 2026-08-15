@@ -1,0 +1,45 @@
+{
+  "title": "المستخدمون",
+  "new": "مستخدم جديد",
+  "addUser": "إضافة مستخدم",
+  "profile": "الملف الشخصي",
+  "myProfile": "ملفي الشخصي",
+  "fields": {
+    "fullName": "الاسم الكامل",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "department": "القسم",
+    "specialty": "التخصص",
+    "status": "الحالة",
+    "createdAt": "تاريخ الإنشاء"
+  },
+  "actions": {
+    "activate": "تفعيل",
+    "deactivate": "تعطيل",
+    "edit": "تعديل المستخدم"
+  },
+  "deactivateTitle": "تعطيل المستخدم",
+  "deactivateConfirm": "سيؤدي هذا إلى تسجيل خروج {{name}} من جميع الأجهزة. هل أنت متأكد؟",
+  "permissions": "الصلاحيات",
+  "active": "نشط",
+  "effectivePermissions": "الصلاحيات الفعلية",
+  "noPermissions": "لا توجد صلاحيات فعلية",
+  "errors": {
+    "cannotDeactivateSelf": "لا يمكنك تعطيل حسابك الخاص",
+    "cannotDeactivateManager": "لا يمكن تعطيل حساب مدير المستشفى",
+    "cannotUseManagerRole": "لا يمكن تعيين دور مدير المستشفى",
+    "phoneOrEmailRequired": "يجب إدخال الهاتف أو البريد الإلكتروني على الأقل"
+  },
+  "sessionsTab": "الجلسات",
+  "editProfile": "تعديل الملف الشخصي",
+  "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+  "profileTab": "الملف الشخصي",
+  "permissionsTab": "الصلاحيات",
+  "resetToDefault": "إعادة التعيين إلى افتراضيات الدور",
+  "cannotEditOwnPermissions": "لا يمكنك تعديل تجاوزات الصلاحيات الخاصة بك.",
+  "clearOverride": "مسح",
+  "manageUser": "إدارة المستخدم",
+  "searchPlaceholder": "ابحث بالاسم أو الهاتف أو البريد الإلكتروني...",
+  "filters": { "allRoles": "جميع الأدوار" }
+}

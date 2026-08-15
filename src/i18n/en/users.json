@@ -1,0 +1,47 @@
+{
+  "title": "Users",
+  "new": "New User",
+  "addUser": "Add User",
+  "profile": "User Profile",
+  "myProfile": "My Profile",
+  "fields": {
+    "fullName": "Full Name",
+    "phone": "Phone",
+    "email": "Email",
+    "role": "Role",
+    "department": "Department",
+    "specialty": "Specialty",
+    "status": "Status",
+    "createdAt": "Created At"
+  },
+  "actions": {
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "edit": "Edit User"
+  },
+  "deactivateTitle": "Deactivate User",
+  "deactivateConfirm": "This will sign {{name}} out on all devices. Are you sure?",
+  "permissions": "Permissions",
+  "active": "Active",
+  "effectivePermissions": "Effective Permissions",
+  "noPermissions": "No permissions assigned",
+  "errors": {
+    "cannotDeactivateSelf": "You cannot deactivate your own account",
+    "cannotDeactivateManager": "The Hospital Manager account cannot be deactivated",
+    "cannotUseManagerRole": "Cannot assign Hospital Manager role",
+    "phoneOrEmailRequired": "At least one of phone or email is required"
+  },
+  "editProfile": "Edit Profile",
+  "profileUpdated": "Profile updated successfully",
+  "profileTab": "Profile",
+  "sessionsTab": "Sessions",
+  "permissionsTab": "Permissions",
+  "resetToDefault": "Reset to Role Defaults",
+  "cannotEditOwnPermissions": "You cannot edit your own permission overrides.",
+  "clearOverride": "clear",
+  "manageUser": "Manage User",
+  "searchPlaceholder": "Search by name, phone, or email...",
+  "filters": {
+    "allRoles": "All Roles"
+  }
+}

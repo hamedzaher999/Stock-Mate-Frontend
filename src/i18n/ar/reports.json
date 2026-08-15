@@ -1,0 +1,62 @@
+{
+  "exportExcel": "تصدير إلى Excel",
+  "trend": "الاتجاه",
+  "byDepartment": "حسب القسم",
+  "noData": "لا توجد بيانات للفلاتر المحددة.",
+  "tabs": {
+    "movement": "حركة المخزون",
+    "adjustments": "التسويات",
+    "visits": "زيارات المرضى"
+  },
+  "filters": {
+    "from": "من",
+    "to": "إلى",
+    "department": "القسم",
+    "allDepartments": "جميع الأقسام",
+    "material": "المادة",
+    "allMaterials": "جميع المواد",
+    "type": "النوع",
+    "allTypes": "جميع الأنواع",
+    "status": "الحالة",
+    "allStatuses": "جميع الحالات",
+    "all": "الكل"
+  },
+  "columns": {
+    "date": "التاريخ",
+    "type": "النوع",
+    "material": "المادة",
+    "department": "القسم",
+    "batch": "الدفعة",
+    "quantity": "الكمية",
+    "balanceAfter": "الرصيد بعد",
+    "reportedBy": "أبلغ بواسطة",
+    "performedBy": "نفذ بواسطة",
+    "patient": "المريض",
+    "doctor": "الطبيب",
+    "status": "الحالة",
+    "count": "العدد"
+  },
+  "movement": {
+    "title": "تقرير حركة المخزون",
+    "subtitle": "معاملات المخزون عبر الأقسام مع الزمن",
+    "totalTransactions": "إجمالي المعاملات",
+    "quantityIn": "الكمية الداخلة",
+    "quantityOut": "الكمية الخارجة",
+    "netQuantity": "صافي الكمية"
+  },
+  "adjustments": {
+    "title": "تقرير التسويات",
+    "subtitle": "تسويات المخزون التالف والمنتهي والعجز والموجود",
+    "totalAdjustments": "إجمالي التسويات",
+    "totalQuantity": "إجمالي الكمية",
+    "increased": "زيادة",
+    "decreased": "نقصان"
+  },
+  "visits": {
+    "title": "تقرير زيارات المرضى",
+    "subtitle": "نشاط الزيارات الطبية عبر الأقسام",
+    "totalVisits": "إجمالي الزيارات",
+    "uniquePatients": "مرضى فريدون",
+    "visitCount": "عدد الزيارات"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Notifications",
+  "markRead": "Mark as Read",
+  "markAllRead": "Mark All Read",
+  "unread": "{{count}} unread",
+  "empty": "No notifications",
+  "new": "New",
+  "categories": {
+    "all": "All",
+    "inventory": "Inventory",
+    "queue": "Queue",
+    "pharmacy": "Pharmacy",
+    "purchasing": "Purchasing",
+    "ai_insight": "AI Insights"
+  },
+  "viewAll": "View all notifications"
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Patients",
+  "register": "Register Patient",
+  "profile": "Patient Profile",
+  "fields": {
+    "fullName": "Full Name",
+    "nationalId": "National ID",
+    "familyBookNumber": "Family Book Number",
+    "patientId": "Patient ID",
+    "registeredBy": "Registered By",
+    "registeredAt": "Registered At"
+  },
+  "lookup": {
+    "title": "Patient Lookup",
+    "placeholder": "Search by name, national ID, or patient ID"
+  },
+  "history": { "title": "Patient History", "noVisits": "No visits recorded" },
+  "errors": { "duplicate": "Patient already registered. Use lookup instead." },
+  "search": { "placeholder": "Search by name, national ID, or patient ID" },
+  "tabs": {
+    "info": "Information",
+    "visits": "Visit History",
+    "prescriptions": "Prescriptions"
+  },
+  "form": { "required": "This field is required" }
+}

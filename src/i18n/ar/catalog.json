@@ -1,0 +1,50 @@
+{
+  "title": "الكتالوج",
+  "products": {
+    "title": "المنتجات",
+    "tab": "المنتجات",
+    "new": "منتج جديد",
+    "addProduct": "إضافة منتج",
+    "name": "اسم المنتج",
+    "category": "الفئة",
+    "type": "نوع المادة",
+    "description": "الوصف",
+    "active": "نشط",
+    "status": "الحالة",
+    "selectCategory": "اختر الفئة"
+  },
+  "variants": {
+    "title": "المتغيرات",
+    "new": "متغير جديد",
+    "name": "اسم المتغير",
+    "sku": "الرمز",
+    "unit": "الوحدة",
+    "product": "المنتج",
+    "suppliers": "الموردون",
+    "preferred": "المفضل",
+    "expectedPrice": "السعر المتوقع",
+    "supplierCode": "رمز المورد",
+    "tab": "المتغيرات",
+    "variantName": "اسم المتغير",
+    "status": "الحالة",
+    "addVariant": "إضافة متغير",
+    "selectProduct": "اختر المنتج...",
+    "selectUnit": "اختر الوحدة...",
+    "allFieldsRequired": "جميع الحقول مطلوبة"
+  },
+  "units": {
+    "title": "وحدات القياس",
+    "tab": "الوحدات",
+    "new": "وحدة جديدة",
+    "name": "الاسم",
+    "abbreviation": "الاختصار"
+  },
+  "categories": {
+    "title": "الفئات",
+    "tab": "الفئات",
+    "new": "فئة جديدة",
+    "name": "الاسم",
+    "parent": "الفئة الرئيسية",
+    "children": "الفئات الفرعية"
+  }
+}

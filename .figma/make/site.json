@@ -1,0 +1,10 @@
+{
+  "description": "Streamline hospital operations with a comprehensive management system for patient records, inventory, prescriptions, and staff coordination, enhancing efficiency and care quality.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
