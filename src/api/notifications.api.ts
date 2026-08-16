@@ -1,11 +1,39 @@
 import { baseApi } from "./baseApi";
-import type { ApiResponse, PaginatedResult, Notification } from "@/lib/apiTypes";
+import type {
+  ApiResponse,
+  PaginatedResult,
+  Notification,
+} from "@/lib/apiTypes";
 
 export const notificationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getNotifications: builder.query<ApiResponse<PaginatedResult<Notification>>, { page?: number; limit?: number; isRead?: boolean; category?: string } | void>({
+    getNotifications: builder.query<
+      ApiResponse<PaginatedResult<Notification>>,
+      {
+        page?: number;
+        limit?: number;
+        isRead?: boolean;
+        category?: string;
+      } | void
+    >({
       query: (params) => ({ url: "/notifications", params: params ?? {} }),
       providesTags: ["Notification"],
+    }),
+    registerDeviceToken: builder.mutation<
+      ApiResponse<unknown>,
+      { fcmToken: string; platform: "web" | "mobile" }
+    >({
+      query: (body) => ({
+        url: "/notifications/device-tokens",
+        method: "POST",
+        body,
+      }),
+    }),
+    unregisterDeviceToken: builder.mutation<ApiResponse<null>, string>({
+      query: (fcmToken) => ({
+        url: `/notifications/device-tokens/${fcmToken}`,
+        method: "DELETE",
+      }),
     }),
     getUnreadCount: builder.query<ApiResponse<{ count: number }>, void>({
       query: () => "/notifications/unread-count",
@@ -23,6 +51,10 @@ export const notificationsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useGetNotificationsQuery, useGetUnreadCountQuery,
-  useMarkNotificationReadMutation, useMarkAllReadMutation,
+  useGetNotificationsQuery,
+  useGetUnreadCountQuery,
+  useMarkNotificationReadMutation,
+  useMarkAllReadMutation,
+  useRegisterDeviceTokenMutation,
+  useUnregisterDeviceTokenMutation,
 } = notificationsApi;

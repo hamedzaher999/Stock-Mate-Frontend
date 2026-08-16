@@ -16,4 +16,17 @@ ui.mjs
 ui.txt
 ui_fix.md
 note.md
+public
+# Firebase local cache and logs
+.firebase/
+firebase-debug.log
+ui-debug.log
 
+# Environment variables and sensitive keys
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/

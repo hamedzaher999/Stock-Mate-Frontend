@@ -1,3 +1,5 @@
+import PushPermissionBanner from "../components/PushPermissionBanner";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -47,6 +49,11 @@ const categoryIcon: Record<string, typeof Bell> = {
 
 export default function NotificationsPage() {
   const { t } = useTranslation("notifications");
+  const {
+    state: pushState,
+    enable: enablePush,
+    disable: disablePush,
+  } = usePushNotifications();
   const navigate = useNavigate();
   const [category, setCategory] = useState<Cat>("all");
   const { data, isLoading } = useGetNotificationsQuery(
@@ -72,6 +79,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="p-6">
+      <PushPermissionBanner />
       <AppPageHeader
         title={t("title")}
         actions={
@@ -136,6 +144,54 @@ export default function NotificationsPage() {
           </TabsContent>
         ))}
       </Tabs>
+      <div className="mt-6 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3">
+        <div>
+          <p className="text-sm font-medium">
+            {t("push.title", { defaultValue: "Push notifications" })}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {pushState === "enabled" &&
+              t("push.statusEnabled", {
+                defaultValue: "Enabled on this device.",
+              })}
+            {pushState === "not-enabled" &&
+              t("push.statusNotEnabled", {
+                defaultValue: "Not enabled on this device.",
+              })}
+            {pushState === "denied" &&
+              t("push.statusDenied", {
+                defaultValue:
+                  "Blocked in browser settings — re-enable it there.",
+              })}
+            {pushState === "unsupported" &&
+              t("push.statusUnsupported", {
+                defaultValue: "Not supported in this browser.",
+              })}
+            {pushState === "enabling" &&
+              t("push.statusEnabling", { defaultValue: "Enabling…" })}
+            {pushState === "error" &&
+              t("push.statusError", { defaultValue: "Something went wrong." })}
+          </p>
+        </div>
+        {pushState === "enabled" ? (
+          <Button variant="outline" size="sm" onClick={disablePush}>
+            {t("push.disable", { defaultValue: "Disable" })}
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            onClick={enablePush}
+            disabled={
+              pushState === "unsupported" ||
+              pushState === "denied" ||
+              pushState === "enabling"
+            }
+            loading={pushState === "enabling"}
+          >
+            {t("push.enable", { defaultValue: "Enable" })}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
