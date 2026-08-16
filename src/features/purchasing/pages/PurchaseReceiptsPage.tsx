@@ -20,6 +20,7 @@ import { formatDate } from "@/lib/formatters";
 import { useGetPurchaseReceiptsQuery } from "@/api/purchasing.api";
 import type { PurchaseReceipt } from "@/lib/apiTypes";
 import { Input } from "@/components/primitive/input";
+import AppErrorState from "@/components/shared/AppErrorState";
 const RECEIPT_STATUSES = [
   "pending_confirmation",
   "confirmed",
@@ -34,14 +35,13 @@ export default function PurchaseReceiptsPage() {
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useGetPurchaseReceiptsQuery({
-    page,
-    limit: 20,
-    ...(purchaseRequestId ? { purchaseRequestId } : {}),
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetPurchaseReceiptsQuery({
+      page,
+      limit: 20,
+      ...(purchaseRequestId ? { purchaseRequestId } : {}),
+    });
 
-  // Backend doesn't support search/status on this list endpoint yet,
-  // so we filter client-side on the current page's results.
   const filteredItems = useMemo(() => {
     let items = data?.data?.items ?? [];
     if (status) {
@@ -140,14 +140,21 @@ export default function PurchaseReceiptsPage() {
           }}
         />
       </div>
-      <AppDataTable
-        data={data?.data ? { ...data.data, items: filteredItems } : data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-        onRowClick={(r) => navigate(`/purchasing/receipts/${r.id}`)}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={
+            data?.data ? { ...data.data, items: filteredItems } : data?.data
+          }
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+          onRowClick={(r) => navigate(`/purchasing/receipts/${r.id}`)}
+        />
+      )}
     </div>
   );
 }

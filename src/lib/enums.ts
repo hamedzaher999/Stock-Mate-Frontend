@@ -3,7 +3,6 @@ export type DepartmentType = "central_warehouse" | "pharmacy" | "standard";
 export type OtpChannel = "phone" | "email";
 export type SessionPlatform = "web" | "mobile";
 export type PermissionEffect = "grant" | "revoke";
-
 // Unified status enum shared by Purchase Requests and Department Refill Requests
 export type RequestStatus =
   | "draft"
@@ -38,7 +37,11 @@ export type ReferenceType =
   | "stock_count";
 
 export type StockCountStatus = "draft" | "completed";
-export type QueueStatus = "waiting" | "in_consultation" | "completed" | "removed";
+export type QueueStatus =
+  | "waiting"
+  | "in_consultation"
+  | "completed"
+  | "removed";
 export type VisitStatus = "completed" | "cancelled";
 export type PrescriptionStatus = "active" | "completed" | "cancelled";
 export type CycleStatus =
@@ -51,8 +54,13 @@ export type FrequencyUnit = "day" | "week" | "month";
 export type RefillRequestPriority = "normal" | "urgent";
 export type RefillRequestType = "normal" | "daily" | "weekly" | "monthly";
 export type PeriodicScheduleStatus = "active" | "cancelled";
-export type ScheduleApprovalPolicy = "auto_approved" | "approval_required_each_cycle";
-export type PurchaseReceiptStatus = "pending_confirmation" | "confirmed" | "cancelled";
+export type ScheduleApprovalPolicy =
+  | "auto_approved"
+  | "approval_required_each_cycle";
+export type PurchaseReceiptStatus =
+  | "pending_confirmation"
+  | "confirmed"
+  | "cancelled";
 export type MaterialType = "consumable" | "fixed_asset";
 export type NotificationCategory =
   | "inventory"
@@ -61,3 +69,5 @@ export type NotificationCategory =
   | "purchasing"
   | "ai_insight";
 export type DeliveryType = "batch" | "final_batch";
+export type DisposalTransferStatus = "initiated" | "confirmed" | "cancelled";
+export type DisposalItemSource = "adjustment" | "near_expiry";

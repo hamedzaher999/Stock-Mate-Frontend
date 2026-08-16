@@ -21,8 +21,10 @@ export const PERMISSIONS = {
   VIEW_PURCHASING_REPORTS: "view_purchasing_reports",
 
   CREATE_DEPARTMENT_REFILL_REQUEST: "create_department_refill_request",
-  APPROVE_DEPARTMENT_REFILL_REQUEST_HOSPITAL: "approve_department_refill_request_hospital",
-  APPROVE_DEPARTMENT_REFILL_REQUEST_MANAGER: "approve_department_refill_request_manager",
+  APPROVE_DEPARTMENT_REFILL_REQUEST_HOSPITAL:
+    "approve_department_refill_request_hospital",
+  APPROVE_DEPARTMENT_REFILL_REQUEST_MANAGER:
+    "approve_department_refill_request_manager",
   PREPARE_DEPARTMENT_REFILL: "prepare_department_refill",
   CONFIRM_DEPARTMENT_DELIVERY: "confirm_department_delivery",
 
@@ -50,6 +52,9 @@ export const PERMISSIONS = {
   VIEW_AI_INSIGHTS: "view_ai_insights",
   REVIEW_AI_INSIGHTS: "review_ai_insights",
   MANAGE_PERIODIC_REFILL_SCHEDULES: "manage_periodic_refill_schedules",
+
+  VIEW_DISPOSAL: "view_disposal",
+  MANAGE_DISPOSAL_TRANSFERS: "manage_disposal_transfers",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

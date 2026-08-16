@@ -29,6 +29,7 @@ import { Textarea } from "@/components/primitive/textarea";
 import { formatDate } from "@/lib/formatters";
 import type { StockCountSession } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
+import AppErrorState from "@/components/shared/AppErrorState";
 
 export default function StockCountsPage() {
   const { t } = useTranslation("inventory");
@@ -43,7 +44,8 @@ export default function StockCountsPage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   const { data: deptData } = useGetDepartmentsQuery();
-  const { data, isLoading } = useGetStockCountsQuery({ page, limit: 20 });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetStockCountsQuery({ page, limit: 20 });
   const [createStockCount, { isLoading: creating }] =
     useCreateStockCountMutation();
 
@@ -110,14 +112,19 @@ export default function StockCountsPage() {
         }
       />
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-          onRowClick={(r) => navigate(`/inventory/stock-counts/${r.id}`)}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+            onRowClick={(r) => navigate(`/inventory/stock-counts/${r.id}`)}
+          />
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

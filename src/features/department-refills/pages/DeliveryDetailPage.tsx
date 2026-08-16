@@ -30,19 +30,25 @@ import {
   useConfirmDeliveryMutation,
   useGetRefillRequestByIdQuery,
 } from "@/api/refills.api";
+import AppEmptyState from "@/components/shared/AppEmptyState";
+import AppErrorState from "@/components/shared/AppErrorState";
 export default function DeliveryDetailPage() {
   const { t } = useTranslation("refills");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useGetDeliveryByIdQuery(id!);
+  const { data, isLoading, isError, refetch } = useGetDeliveryByIdQuery(id!);
   const delivery = data?.data;
 
-  const { data: requestData } = useGetRefillRequestByIdQuery(
-    delivery?.refillRequestId ?? "",
-    { skip: !delivery?.refillRequestId },
-  );
+  const {
+    data: requestData,
+    isLoading: requestLoading,
+    isFetching: requestFetching,
+  } = useGetRefillRequestByIdQuery(delivery?.refillRequestId ?? "", {
+    skip: !delivery?.refillRequestId,
+  });
   const request = requestData?.data;
+  const requestBusy = requestLoading || requestFetching;
 
   const [confirmDelivery, { isLoading: confirming }] =
     useConfirmDeliveryMutation();
@@ -58,14 +64,28 @@ export default function DeliveryDetailPage() {
 
   if (isLoading)
     return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  if (isError)
+    return (
       <div className="p-6">
-        <Skeleton className="h-64 w-full" />
+        <AppErrorState onRetry={() => refetch()} />
       </div>
     );
   if (!delivery)
     return (
-      <div className="p-6 text-muted-foreground">
-        {t("common:actions.notFound")}
+      <div className="p-6">
+        <AppEmptyState
+          title={t("common:actions.notFound")}
+          description={t("deliveries.notFoundDescription", {
+            defaultValue:
+              "This delivery may have been removed or you don't have access to it.",
+          })}
+        />
       </div>
     );
 
@@ -201,25 +221,33 @@ export default function DeliveryDetailPage() {
         <div className="space-y-4">
           <Card>
             <CardContent className="p-5 space-y-3 text-sm">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">
                   {t("deliveries.detail.refillRequest")}
                 </span>
-                <button
-                  className="text-primary hover:underline font-mono text-xs"
-                  onClick={() =>
-                    navigate(`/refills/requests/${delivery.refillRequestId}`)
-                  }
-                >
-                  {request?.requestNumber ??
-                    delivery.refillRequestId.slice(0, 8)}
-                </button>
+                {requestBusy ? (
+                  <Skeleton className="h-4 w-20" />
+                ) : (
+                  <button
+                    className="text-primary hover:underline font-mono text-xs"
+                    onClick={() =>
+                      navigate(`/refills/requests/${delivery.refillRequestId}`)
+                    }
+                  >
+                    {request?.requestNumber ??
+                      delivery.refillRequestId.slice(0, 8)}
+                  </button>
+                )}
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">
                   {t("deliveries.detail.department")}
                 </span>
-                <span>{request?.department?.name ?? "—"}</span>
+                {requestBusy ? (
+                  <Skeleton className="h-4 w-24" />
+                ) : (
+                  <span>{request?.department?.name ?? "—"}</span>
+                )}
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">

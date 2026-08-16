@@ -55,6 +55,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/primitive/dialog";
+import AppErrorState from "@/components/shared/AppErrorState";
 
 interface ProfileForm {
   fullName: string;
@@ -67,7 +68,7 @@ interface ProfileForm {
 
 function ProfileTab({ userId }: { userId: string }) {
   const { t } = useTranslation("users");
-  const { data, isLoading } = useGetUserByIdQuery(userId);
+  const { data, isLoading, isError, refetch } = useGetUserByIdQuery(userId);
   const user = data?.data;
   const { data: rolesData } = useGetRolesQuery();
   const { data: deptsData } = useGetDepartmentsQuery();
@@ -119,7 +120,18 @@ function ProfileTab({ userId }: { userId: string }) {
     }
   }
 
-  if (isLoading || !form) return <Skeleton className="h-64 w-full" />;
+  if (isLoading || (!form && !isError))
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-9 w-full" />
+      </div>
+    );
+
+  if (isError) return <AppErrorState onRetry={() => refetch()} />;
+
+  if (!form) return null;
 
   return (
     <Card>
@@ -215,8 +227,18 @@ function ProfileTab({ userId }: { userId: string }) {
 function PermissionsTab({ userId }: { userId: string }) {
   const { t } = useTranslation("users");
   const currentUser = useCurrentUser();
-  const { data: permsData } = useGetPermissionsQuery();
-  const { data: userPermsData, isLoading } = useGetUserPermissionsQuery(userId);
+  const {
+    data: permsData,
+    isLoading: permsLoading,
+    isError: permsError,
+    refetch: refetchPerms,
+  } = useGetPermissionsQuery();
+  const {
+    data: userPermsData,
+    isLoading: userPermsLoading,
+    isError: userPermsError,
+    refetch: refetchUserPerms,
+  } = useGetUserPermissionsQuery(userId);
   const [addPermission] = useAddUserPermissionMutation();
   const [removePermission] = useDeleteUserPermissionMutation();
   const [resetPermissions, { isLoading: resetting }] =
@@ -249,7 +271,27 @@ function PermissionsTab({ userId }: { userId: string }) {
     await removePermission({ userId, permissionCode: code });
   }
 
-  if (isLoading) return <Skeleton className="h-64 w-full" />;
+  const isLoading = permsLoading || userPermsLoading;
+  const isError = permsError || userPermsError;
+
+  if (isLoading)
+    return (
+      <div className="space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <Skeleton key={i} className="h-20 w-full" />
+        ))}
+      </div>
+    );
+
+  if (isError)
+    return (
+      <AppErrorState
+        onRetry={() => {
+          if (permsError) refetchPerms();
+          if (userPermsError) refetchUserPerms();
+        }}
+      />
+    );
 
   return (
     <Card>
@@ -328,7 +370,7 @@ function PermissionsTab({ userId }: { userId: string }) {
 function SessionsTab({ userId }: { userId: string }) {
   const { t } = useTranslation("sessions");
   const currentUser = useCurrentUser();
-  const { data, isLoading } = useGetUserSessionsQuery(userId);
+  const { data, isLoading, isError, refetch } = useGetUserSessionsQuery(userId);
   const [revokeSession] = useRevokeUserSessionMutation();
   const [revokeAll, { isLoading: revokingAll }] =
     useRevokeAllUserSessionsMutation();
@@ -375,13 +417,17 @@ function SessionsTab({ userId }: { userId: string }) {
             {t("userSessions.viewingOwnHint")}
           </p>
         )}
-        <SessionsList
-          sessions={sessions}
-          isLoading={isLoading}
-          onRevoke={handleRevoke}
-          revokingId={revokingId}
-          emptyMessage={t("userSessions.empty")}
-        />
+        {isError ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <SessionsList
+            sessions={sessions}
+            isLoading={isLoading}
+            onRevoke={handleRevoke}
+            revokingId={revokingId}
+            emptyMessage={t("userSessions.empty")}
+          />
+        )}
       </CardContent>
 
       <Dialog

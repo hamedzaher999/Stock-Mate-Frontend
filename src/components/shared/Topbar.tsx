@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Bell, LogOut, User, Settings, Menu } from "lucide-react";
+import { Bell, LogOut, User, Settings, Menu, Loader2 } from "lucide-react";
 import { Button } from "@/components/primitive/button";
 import { useCurrentUser } from "@/hooks/usePermission";
 import {
@@ -16,14 +16,22 @@ import { useUiStore } from "@/stores/ui.store";
 import { useState } from "react";
 import { formatRelative } from "@/lib/formatters";
 import { useThemeStore } from "@/stores/theme.store";
+import AppErrorState from "./AppErrorState";
+import { Skeleton } from "../primitive/skeleton";
 function NotificationBell() {
   const { t } = useTranslation("notifications");
   const { data } = useGetUnreadCountQuery(undefined, {
     pollingInterval: 30000,
   });
-  const { data: notifData } = useGetNotificationsQuery(
+  const {
+    data: notifData,
+    isLoading: notifLoading,
+    isFetching: notifFetching,
+    isError: notifError,
+    refetch: refetchNotif,
+  } = useGetNotificationsQuery(
     { limit: 8 },
-    { pollingInterval: 30000 },
+    { pollingInterval: 30000, skip: false },
   );
   const [markAll] = useMarkAllReadMutation();
   const navigate = useNavigate();
@@ -60,36 +68,69 @@ function NotificationBell() {
             )}
           </div>
           <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {notifLoading ? (
+              <div className="p-4 space-y-2">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-14 w-full" />
+                ))}
+              </div>
+            ) : notifError ? (
+              <div className="p-4">
+                <AppErrorState
+                  title={t("errorTitle", {
+                    defaultValue: "Couldn't load notifications",
+                  })}
+                  description=""
+                  onRetry={() => refetchNotif()}
+                />
+              </div>
+            ) : notifications.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 {t("empty")}
               </p>
             ) : (
-              notifications.map((n) => (
-                <button
-                  key={n.id}
-                  className="w-full text-start px-4 py-3 hover:bg-muted border-b border-border last:border-0 transition-colors"
-                  onClick={() => {
-                    setOpen(false);
-                    navigate("/notifications");
-                  }}
+              <div className="relative">
+                <div
+                  className={
+                    notifFetching
+                      ? "pointer-events-none opacity-60 transition-opacity duration-150"
+                      : "transition-opacity duration-150"
+                  }
                 >
-                  <div className="flex items-start gap-2">
-                    {!n.isRead && (
-                      <span className="mt-1.5 size-2 rounded-full bg-primary shrink-0" />
-                    )}
-                    <div className={n.isRead ? "ms-4" : ""}>
-                      <p className="text-xs font-medium">{n.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                        {n.body}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        {formatRelative(n.createdAt)}
-                      </p>
+                  {notifications.map((n) => (
+                    <button
+                      key={n.id}
+                      className="w-full text-start px-4 py-3 hover:bg-muted border-b border-border last:border-0 transition-colors"
+                      onClick={() => {
+                        setOpen(false);
+                        navigate("/notifications");
+                      }}
+                    >
+                      <div className="flex items-start gap-2">
+                        {!n.isRead && (
+                          <span className="mt-1.5 size-2 rounded-full bg-primary shrink-0" />
+                        )}
+                        <div className={n.isRead ? "ms-4" : ""}>
+                          <p className="text-xs font-medium">{n.title}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                            {n.body}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground mt-1">
+                            {formatRelative(n.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {notifFetching && (
+                  <div className="absolute inset-0 flex items-start justify-center pt-4">
+                    <div className="flex items-center gap-2 rounded-full bg-card border border-border shadow-md px-3 py-1 text-xs text-muted-foreground">
+                      <Loader2 className="size-3 animate-spin" />
                     </div>
                   </div>
-                </button>
-              ))
+                )}
+              </div>
             )}
           </div>
           <div className="p-3 border-t border-border">

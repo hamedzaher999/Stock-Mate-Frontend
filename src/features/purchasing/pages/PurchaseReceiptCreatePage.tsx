@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Upload, X } from "lucide-react";
+import { Loader2, Plus, Trash2, Upload, X } from "lucide-react";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import { Button } from "@/components/primitive/button";
 import {
@@ -26,6 +26,7 @@ import {
   useCreatePurchaseReceiptMutation,
 } from "@/api/purchasing.api";
 import { useGetSuppliersQuery } from "@/api/suppliers.api";
+import { Skeleton } from "@/components/primitive/skeleton";
 interface ReceiptItemForm {
   purchaseRequestItemId: string;
   quantity: string;
@@ -53,12 +54,18 @@ export default function PurchaseReceiptCreatePage() {
   const [receiptImages, setReceiptImages] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: requestsData } = useGetPurchaseRequestsQuery({ limit: 100 });
-  const { data: requestDetail } = useGetPurchaseRequestByIdQuery(
-    purchaseRequestId,
-    { skip: !purchaseRequestId },
-  );
-  const { data: suppliersData } = useGetSuppliersQuery({ isActive: true });
+  const { data: requestsData, isLoading: requestsLoading } =
+    useGetPurchaseRequestsQuery({ limit: 100 });
+  const {
+    data: requestDetail,
+    isLoading: requestDetailLoading,
+    isFetching: requestDetailFetching,
+  } = useGetPurchaseRequestByIdQuery(purchaseRequestId, {
+    skip: !purchaseRequestId,
+  });
+  const { data: suppliersData, isLoading: suppliersLoading } =
+    useGetSuppliersQuery({ isActive: true });
+  const requestItemsBusy = requestDetailLoading || requestDetailFetching;
   const [createReceipt, { isLoading: creating }] =
     useCreatePurchaseReceiptMutation();
 
@@ -188,14 +195,26 @@ export default function PurchaseReceiptCreatePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
-            <Label required>{t("receipts.form.purchaseRequest")}</Label>
+            <div className="flex items-center gap-1.5">
+              <Label required>{t("receipts.form.purchaseRequest")}</Label>
+              {requestsLoading && (
+                <Loader2 className="size-3 animate-spin text-muted-foreground" />
+              )}
+            </div>
             <Select
               value={purchaseRequestId}
               onValueChange={handleSelectRequest}
+              disabled={requestsLoading}
             >
               <SelectTrigger>
                 <SelectValue
-                  placeholder={t("receipts.form.selectPurchaseRequest")}
+                  placeholder={
+                    requestsLoading
+                      ? t("receipts.form.loadingRequests", {
+                          defaultValue: "Loading…",
+                        })
+                      : t("receipts.form.selectPurchaseRequest")
+                  }
                 />
               </SelectTrigger>
               <SelectContent>
@@ -206,7 +225,7 @@ export default function PurchaseReceiptCreatePage() {
                 ))}
               </SelectContent>
             </Select>
-            {eligibleRequests.length === 0 && (
+            {!requestsLoading && eligibleRequests.length === 0 && (
               <p className="text-xs text-muted-foreground">
                 {t("receipts.form.noEligibleRequests")}
               </p>
@@ -215,11 +234,26 @@ export default function PurchaseReceiptCreatePage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label required>{t("receipts.form.supplier")}</Label>
-              <Select value={supplierId} onValueChange={setSupplierId}>
+              <div className="flex items-center gap-1.5">
+                <Label required>{t("receipts.form.supplier")}</Label>
+                {suppliersLoading && (
+                  <Loader2 className="size-3 animate-spin text-muted-foreground" />
+                )}
+              </div>
+              <Select
+                value={supplierId}
+                onValueChange={setSupplierId}
+                disabled={suppliersLoading}
+              >
                 <SelectTrigger>
                   <SelectValue
-                    placeholder={t("receipts.form.selectSupplier")}
+                    placeholder={
+                      suppliersLoading
+                        ? t("receipts.form.loadingSuppliers", {
+                            defaultValue: "Loading…",
+                          })
+                        : t("receipts.form.selectSupplier")
+                    }
                   />
                 </SelectTrigger>
                 <SelectContent>
@@ -338,6 +372,14 @@ export default function PurchaseReceiptCreatePage() {
               {t("receipts.form.selectRequestFirst")}
             </p>
           )}
+          {purchaseRequestId &&
+            requestItemsBusy &&
+            requestItems.length === 0 && (
+              <div className="space-y-2">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            )}
           {purchaseRequestId &&
             items.map((item, i) => {
               const options = availableItemsFor(i);

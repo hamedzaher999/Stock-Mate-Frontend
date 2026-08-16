@@ -113,8 +113,11 @@ export default function RefillRequestDetailPage() {
   );
   const warehouse = warehouseData?.data?.items?.[0];
 
-  const { data: deliveriesData, isLoading: deliveriesLoading } =
-    useGetDeliveriesQuery({ refillRequestId: id, limit: 50 }, { skip: !id });
+  const {
+    data: deliveriesData,
+    isLoading: deliveriesLoading,
+    isFetching: deliveriesFetching,
+  } = useGetDeliveriesQuery({ refillRequestId: id, limit: 50 }, { skip: !id });
   const deliveries = deliveriesData?.data?.items ?? [];
 
   const [createDelivery, { isLoading: shipping }] = useCreateDeliveryMutation();
@@ -190,7 +193,11 @@ export default function RefillRequestDetailPage() {
     index: number;
   }) {
     const item = shippableItems.find((i) => i.id === line.refillItemId);
-    const { data: batchData } = useGetBatchesQuery(
+    const {
+      data: batchData,
+      isLoading: batchesLoading,
+      isFetching: batchesFetching,
+    } = useGetBatchesQuery(
       {
         variantId: item?.variantId,
         departmentId: warehouse?.id,
@@ -202,6 +209,7 @@ export default function RefillRequestDetailPage() {
     const remaining = item
       ? Number(item.approvedQuantity ?? 0) - Number(item.deliveredQuantity ?? 0)
       : 0;
+    const batchesBusy = batchesLoading || batchesFetching;
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 p-3 rounded-xl bg-muted/50">
@@ -214,15 +222,36 @@ export default function RefillRequestDetailPage() {
           </p>
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">{t("requests.warehouseBatch")}</Label>
+          <div className="flex items-center gap-1.5">
+            <Label className="text-xs">{t("requests.warehouseBatch")}</Label>
+            {batchesBusy && (
+              <Loader2 className="size-3 animate-spin text-muted-foreground" />
+            )}
+          </div>
           <Select
             value={line.batchId}
             onValueChange={(v) => updateDeliveryLine(index, "batchId", v)}
+            disabled={batchesLoading}
           >
             <SelectTrigger>
-              <SelectValue placeholder={t("requests.selectBatch")} />
+              <SelectValue
+                placeholder={
+                  batchesLoading
+                    ? t("requests.loadingBatches", {
+                        defaultValue: "Loading batches…",
+                      })
+                    : t("requests.selectBatch")
+                }
+              />
             </SelectTrigger>
             <SelectContent>
+              {!batchesLoading && batches.length === 0 && (
+                <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                  {t("requests.noBatchesAvailable", {
+                    defaultValue: "No batches available.",
+                  })}
+                </div>
+              )}
               {batches.map((b) => {
                 const qtyAtWarehouse =
                   b.batchStocks?.find((s) => s.departmentId === warehouse?.id)
@@ -415,54 +444,82 @@ export default function RefillRequestDetailPage() {
       </p>
 
       {/* Deliveries list */}
-      {(deliveriesLoading || deliveries.length > 0) && (
+      {(deliveriesLoading || deliveries.length > 0 || deliveriesFetching) && (
         <div>
           <h3 className="text-sm font-semibold text-muted-foreground mb-2">
             {t("requests.deliveries")}
           </h3>
           {deliveriesLoading ? (
-            <Skeleton className="h-24 w-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
           ) : (
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="px-4 py-2 text-start font-medium">
-                      {t("deliveries.deliveryId")}
-                    </th>
-                    <th className="px-4 py-2 text-start font-medium">
-                      {t("deliveries.date")}
-                    </th>
-                    <th className="px-4 py-2 text-start font-medium">
-                      {t("deliveries.status")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {deliveries.map((d) => (
-                    <tr
-                      key={d.id}
-                      className="border-t cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/refills/deliveries/${d.id}`)}
-                    >
-                      <td className="px-4 py-2">
-                        <span className="font-mono text-xs">
-                          {d.id.slice(0, 8)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        {formatDateTime(d.deliveredAt)}
-                      </td>
-                      <td className="px-4 py-2">
-                        <StatusBadge
-                          status={d.confirmedAt ? "confirmed" : "pending"}
-                          domain="delivery"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="relative">
+              <div
+                className={
+                  deliveriesFetching
+                    ? "pointer-events-none opacity-60 transition-opacity duration-150"
+                    : "transition-opacity duration-150"
+                }
+              >
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="px-4 py-2 text-start font-medium">
+                          {t("deliveries.deliveryId")}
+                        </th>
+                        <th className="px-4 py-2 text-start font-medium">
+                          {t("deliveries.date")}
+                        </th>
+                        <th className="px-4 py-2 text-start font-medium">
+                          {t("deliveries.status")}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {deliveries.map((d) => (
+                        <tr
+                          key={d.id}
+                          className="border-t cursor-pointer hover:bg-muted/50"
+                          onClick={() =>
+                            navigate(`/refills/deliveries/${d.id}`)
+                          }
+                        >
+                          <td className="px-4 py-2">
+                            <span className="font-mono text-xs">
+                              {d.id.slice(0, 8)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2">
+                            {formatDateTime(d.deliveredAt)}
+                          </td>
+                          <td className="px-4 py-2">
+                            <StatusBadge
+                              status={d.confirmedAt ? "confirmed" : "pending"}
+                              domain="delivery"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {deliveriesFetching && (
+                <div className="absolute inset-0 flex items-start justify-center pt-6">
+                  <div className="flex items-center gap-2 rounded-full bg-card border border-border shadow-md px-3 py-1.5 text-xs text-muted-foreground">
+                    <Loader2 className="size-3.5 animate-spin" />
+                    <span>
+                      {t("common:table.updating", {
+                        defaultValue: "Updating…",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

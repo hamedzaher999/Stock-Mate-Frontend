@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Plus, PlusCircle, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, PlusCircle, Trash2 } from "lucide-react";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import AppDataTable from "@/components/shared/AppDataTable";
 import { Button } from "@/components/primitive/button";
@@ -34,6 +34,7 @@ import type {
 } from "@/lib/apiTypes";
 import type { ColumnDef } from "@/components/shared/AppDataTable";
 import { useTranslation } from "react-i18next";
+import AppErrorState from "@/components/shared/AppErrorState";
 interface StockSettingItemForm {
   variantId: string;
   storageLocation: string;
@@ -69,15 +70,26 @@ export default function StockSettingsPage() {
   const [deptFilter, setDeptFilter] = useState("");
   const [variantFilter, setVariantFilter] = useState("");
 
-  const { data, isLoading } = useGetStockSettingsQuery({
-    page,
-    limit: 20,
-    ...(deptFilter ? { departmentId: deptFilter } : {}),
-    ...(variantFilter ? { variantId: variantFilter } : {}),
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetStockSettingsQuery({
+      page,
+      limit: 20,
+      ...(deptFilter ? { departmentId: deptFilter } : {}),
+      ...(variantFilter ? { variantId: variantFilter } : {}),
+    });
   const [create, { isLoading: creating }] = useCreateStockSettingMutation();
   const [update, { isLoading: updating }] = useUpdateStockSettingMutation();
   const [updateStatus] = useUpdateStockSettingStatusMutation();
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  async function handleStatusToggle(id: string, isActive: boolean) {
+    setTogglingId(id);
+    try {
+      await updateStatus({ id, isActive }).unwrap();
+    } finally {
+      setTogglingId(null);
+    }
+  }
   const { data: variantData } = useGetVariantsQuery({
     isActive: true,
     limit: 100,
@@ -218,11 +230,17 @@ export default function StockSettingsPage() {
       key: "active",
       header: t("stockSettings.active"),
       cell: (r) => (
-        <Switch
-          checked={r.isActive}
-          onCheckedChange={(v) => updateStatus({ id: r.id, isActive: v })}
-          onClick={(e) => e.stopPropagation()}
-        />
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={r.isActive}
+            onCheckedChange={(v) => handleStatusToggle(r.id, v)}
+            onClick={(e) => e.stopPropagation()}
+            disabled={togglingId === r.id}
+          />
+          {togglingId === r.id && (
+            <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+          )}
+        </div>
       ),
     },
     {
@@ -303,13 +321,18 @@ export default function StockSettingsPage() {
         </Select>
       </div>
 
-      <AppDataTable
-        data={data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={data?.data}
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+        />
+      )}
       {/* Create Dialog */}
       <Dialog
         open={open}

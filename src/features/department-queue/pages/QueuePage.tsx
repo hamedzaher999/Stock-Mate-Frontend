@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Clock, CheckCircle2 } from "lucide-react";
+import { UserPlus, Clock, CheckCircle2, Loader2 } from "lucide-react";
 import {
   useGetQueueQuery,
   useAddToQueueMutation,
@@ -38,6 +38,7 @@ import { formatRelative } from "@/lib/formatters";
 import type { Patient, QueueEntry } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
 import PatientQuickFindPanel from "@/components/shared/PatientQuickFindPanel";
+import AppErrorState from "@/components/shared/AppErrorState";
 export default function QueuePage() {
   const { t } = useTranslation("queue");
   const navigate = useNavigate();
@@ -62,11 +63,23 @@ export default function QueuePage() {
 
   const [tab, setTab] = useState<"live" | "history">("live");
 
-  const { data: liveData, isLoading: liveLoading } = useGetQueueQuery(
+  const {
+    data: liveData,
+    isLoading: liveLoading,
+    isFetching: liveFetching,
+    isError: liveError,
+    refetch: refetchLive,
+  } = useGetQueueQuery(
     { departmentId: deptId },
     { skip: !deptId, pollingInterval: 30000 },
   );
-  const { data: historyData, isLoading: historyLoading } = useGetQueueQuery(
+  const {
+    data: historyData,
+    isLoading: historyLoading,
+    isFetching: historyFetching,
+    isError: historyError,
+    refetch: refetchHistory,
+  } = useGetQueueQuery(
     { departmentId: deptId, status: "completed,removed" },
     { skip: !deptId || tab !== "history" },
   );
@@ -217,6 +230,77 @@ export default function QueuePage() {
     );
   }
 
+  function renderEntryList(
+    entries: QueueEntry[],
+    listLoading: boolean,
+    listFetching: boolean,
+    listError: boolean,
+    onRetryList: () => void,
+    emptyText: string,
+  ) {
+    if (listLoading) {
+      return (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-16" />
+          ))}
+        </div>
+      );
+    }
+
+    if (listError && entries.length === 0) {
+      return <AppErrorState onRetry={onRetryList} />;
+    }
+
+    if (entries.length === 0 && !listFetching) {
+      return (
+        <p className="text-sm text-muted-foreground py-8 text-center">
+          {emptyText}
+        </p>
+      );
+    }
+
+    const showOverlay = listFetching && !listLoading;
+
+    return (
+      <div className="relative">
+        <div
+          className={
+            showOverlay
+              ? "pointer-events-none opacity-60 transition-opacity duration-150"
+              : "transition-opacity duration-150"
+          }
+        >
+          {entries.length === 0 ? (
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-16" />
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-4 divide-y divide-border">
+                {entries.map((entry) => (
+                  <EntryRow key={entry.id} entry={entry} />
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+        {showOverlay && (
+          <div className="absolute inset-0 flex items-start justify-center pt-8">
+            <div className="flex items-center gap-2 rounded-full bg-card border border-border shadow-md px-3 py-1.5 text-xs text-muted-foreground">
+              <Loader2 className="size-3.5 animate-spin" />
+              <span>
+                {t("common:table.updating", { defaultValue: "Updating…" })}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (deptLoading)
     return (
       <div className="p-6">
@@ -277,46 +361,24 @@ export default function QueuePage() {
           </TabsList>
 
           <TabsContent value="live">
-            {liveLoading ? (
-              <div className="space-y-2">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16" />
-                ))}
-              </div>
-            ) : liveEntries.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-8 text-center">
-                {t("queueEmpty")}
-              </p>
-            ) : (
-              <Card>
-                <CardContent className="p-4 divide-y divide-border">
-                  {liveEntries.map((entry) => (
-                    <EntryRow key={entry.id} entry={entry} />
-                  ))}
-                </CardContent>
-              </Card>
+            {renderEntryList(
+              liveEntries,
+              liveLoading,
+              liveFetching,
+              liveError,
+              refetchLive,
+              t("queueEmpty"),
             )}
           </TabsContent>
 
           <TabsContent value="history">
-            {historyLoading ? (
-              <div className="space-y-2">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16" />
-                ))}
-              </div>
-            ) : historyEntries.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-8 text-center">
-                {t("noHistory")}
-              </p>
-            ) : (
-              <Card>
-                <CardContent className="p-4 divide-y divide-border">
-                  {historyEntries.map((entry) => (
-                    <EntryRow key={entry.id} entry={entry} />
-                  ))}
-                </CardContent>
-              </Card>
+            {renderEntryList(
+              historyEntries,
+              historyLoading,
+              historyFetching,
+              historyError,
+              refetchHistory,
+              t("noHistory"),
             )}
           </TabsContent>
         </Tabs>

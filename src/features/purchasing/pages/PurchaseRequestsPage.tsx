@@ -31,6 +31,7 @@ import { formatDate, formatCurrency } from "@/lib/formatters";
 import type { PurchaseRequest } from "@/lib/apiTypes";
 import type { ColumnDef } from "@/components/shared/AppDataTable";
 import { useTranslation } from "react-i18next";
+import AppErrorState from "@/components/shared/AppErrorState";
 interface ItemRow {
   variantId: string;
   requestedQuantity: number;
@@ -52,11 +53,12 @@ export default function PurchaseRequestsPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
-  const { data, isLoading } = useGetPurchaseRequestsQuery({
-    page,
-    limit: 20,
-    ...(status ? { status } : {}),
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetPurchaseRequestsQuery({
+      page,
+      limit: 20,
+      ...(status ? { status } : {}),
+    });
   const [create, { isLoading: creating }] = useCreatePurchaseRequestMutation();
   const { data: variantData } = useGetVariantsQuery({
     isActive: true,
@@ -174,14 +176,19 @@ export default function PurchaseRequestsPage() {
           </SelectContent>
         </Select>
       </div>
-      <AppDataTable
-        data={data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-        onRowClick={(r) => navigate(r.id)}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={data?.data}
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+          onRowClick={(r) => navigate(r.id)}
+        />
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">

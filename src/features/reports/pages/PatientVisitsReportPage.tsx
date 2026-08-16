@@ -60,7 +60,7 @@ export default function PatientVisitsReportPage() {
     ...(status ? { status } : {}),
   };
 
-  const { data, isLoading, isFetching } =
+  const { data, isLoading, isFetching, isError, refetch } =
     useGetPatientVisitsReportQuery(queryParams);
   const result = data?.data;
 
@@ -122,6 +122,9 @@ export default function PatientVisitsReportPage() {
       onExport={handleExport}
       exporting={exporting}
       isLoading={isLoading}
+      isFetching={isFetching}
+      isError={isError}
+      onRetry={refetch}
       filters={
         <>
           <div className="space-y-1.5">
@@ -249,7 +252,8 @@ export default function PatientVisitsReportPage() {
         <AppDataTable
           data={result?.rows}
           columns={columns}
-          isLoading={isFetching}
+          isLoading={false}
+          isFetching={isFetching}
           rowKey={(r) => r.id}
           onPageChange={setPage}
         />

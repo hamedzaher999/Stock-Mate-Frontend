@@ -10,6 +10,11 @@
     "partially_complete": "Partially Complete",
     "cancelled": "Cancelled"
   },
+  "disposalTransfer": {
+    "initiated": "Initiated",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled"
+  },
   "refillRequest": {
     "draft": "Draft",
     "pending_hospital_approval": "Pending Hospital Approval",

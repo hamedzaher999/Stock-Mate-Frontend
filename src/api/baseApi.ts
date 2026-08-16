@@ -81,6 +81,8 @@ export const baseApi = createApi({
     "Notification",
     "UnreadCount",
     "Session",
+    "PeriodicSchedule",
+    "DisposalTransfer",
   ],
   endpoints: () => ({}),
 });

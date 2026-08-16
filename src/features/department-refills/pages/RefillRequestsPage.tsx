@@ -1,3 +1,4 @@
+import AppErrorState from "@/components/shared/AppErrorState";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -71,11 +72,12 @@ export default function RefillRequestsPage() {
   const [notes, setNotes] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { data, isLoading } = useGetRefillRequestsQuery({
-    page,
-    limit: 20,
-    ...(status ? { status } : {}),
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetRefillRequestsQuery({
+      page,
+      limit: 20,
+      ...(status ? { status } : {}),
+    });
   const { data: stockSettingsData } = useGetStockSettingsQuery(
     {
       departmentId: deptId,
@@ -194,14 +196,19 @@ export default function RefillRequestsPage() {
         </Select>
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-          onRowClick={(r) => navigate(`/refills/requests/${r.id}`)}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+            onRowClick={(r) => navigate(`/refills/requests/${r.id}`)}
+          />
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

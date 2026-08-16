@@ -15,6 +15,7 @@ import {
 import { formatDateTime } from "@/lib/formatters";
 import type { Visit } from "@/lib/apiTypes";
 import { useNavigate } from "react-router-dom";
+import AppErrorState from "@/components/shared/AppErrorState";
 const VISIT_STATUSES = ["completed", "cancelled"] as const;
 export default function VisitsPage() {
   const { t } = useTranslation("visits");
@@ -22,7 +23,7 @@ export default function VisitsPage() {
   const [status, setStatus] = useState("");
   const [deptId, setDeptId] = useState("");
   const navigate = useNavigate();
-  const { data, isLoading } = useGetVisitsQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useGetVisitsQuery({
     page,
     limit: 20,
     ...(status ? { status } : {}),
@@ -96,14 +97,19 @@ export default function VisitsPage() {
         </Select>
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-          onRowClick={(r) => navigate(`/visits/${r.id}`)}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+            onRowClick={(r) => navigate(`/visits/${r.id}`)}
+          />
+        )}
       </div>
     </div>
   );

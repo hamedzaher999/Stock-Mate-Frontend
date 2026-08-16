@@ -18,7 +18,11 @@ const REQUEST_STATUS_MAP: Record<string, BadgeVariant> = {
 const STATUS_MAP: Record<string, Record<string, BadgeVariant>> = {
   purchaseRequest: REQUEST_STATUS_MAP,
   refillRequest: REQUEST_STATUS_MAP,
-
+  disposalTransfer: {
+    initiated: "warning",
+    confirmed: "success",
+    cancelled: "neutral",
+  },
   purchaseReceipt: {
     pending_confirmation: "warning",
     confirmed: "success",

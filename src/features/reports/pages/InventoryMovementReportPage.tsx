@@ -74,7 +74,7 @@ export default function InventoryMovementReportPage() {
     ...(transactionType ? { transactionType } : {}),
   };
 
-  const { data, isLoading, isFetching } =
+  const { data, isLoading, isFetching, isError, refetch } =
     useGetInventoryMovementReportQuery(queryParams);
   const result = data?.data;
 
@@ -167,6 +167,9 @@ export default function InventoryMovementReportPage() {
       onExport={handleExport}
       exporting={exporting}
       isLoading={isLoading}
+      isFetching={isFetching}
+      isError={isError}
+      onRetry={refetch}
       filters={
         <>
           <div className="space-y-1.5">
@@ -339,7 +342,8 @@ export default function InventoryMovementReportPage() {
         <AppDataTable
           data={result?.rows}
           columns={columns}
-          isLoading={isFetching}
+          isLoading={false}
+          isFetching={isFetching}
           rowKey={(r) => r.id}
           onPageChange={setPage}
         />

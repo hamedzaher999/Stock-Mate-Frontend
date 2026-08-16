@@ -1,3 +1,6 @@
+import { Loader2 } from "lucide-react";
+import AppErrorState from "@/components/shared/AppErrorState";
+import AppEmptyState from "@/components/shared/AppEmptyState";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { PlusCircle } from "lucide-react";
@@ -32,7 +35,7 @@ import { useTranslation } from "react-i18next";
 export default function StockCountDetailPage() {
   const { t } = useTranslation("inventory");
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = useGetStockCountByIdQuery(id!);
+  const { data, isLoading, isError, refetch } = useGetStockCountByIdQuery(id!);
   const session = data?.data;
 
   const [newItem, setNewItem] = useState({
@@ -46,7 +49,11 @@ export default function StockCountDetailPage() {
     isActive: true,
     limit: 100,
   } as { isActive: boolean; limit: number });
-  const { data: batchData } = useGetBatchesQuery(
+  const {
+    data: batchData,
+    isLoading: batchesLoading,
+    isFetching: batchesFetching,
+  } = useGetBatchesQuery(
     {
       variantId: newItem.variantId,
       departmentId: session?.departmentId,
@@ -54,6 +61,7 @@ export default function StockCountDetailPage() {
     } as { variantId: string; departmentId: string; limit: number },
     { skip: !newItem.variantId || !session?.departmentId },
   );
+  const batchesBusy = batchesLoading || batchesFetching;
 
   const [addItem, { isLoading: adding }] = useAddStockCountItemMutation();
   const [completeSession, { isLoading: completing }] =
@@ -80,12 +88,24 @@ export default function StockCountDetailPage() {
     }
   }
 
-  if (isLoading) return <Skeleton className="h-64 w-full" />;
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  if (isError) return <AppErrorState onRetry={() => refetch()} />;
   if (!session)
     return (
-      <p className="text-muted-foreground">
-        {t("stockCounts.sessionNotFound")}
-      </p>
+      <AppEmptyState
+        title={t("stockCounts.sessionNotFound")}
+        description={t("stockCounts.sessionNotFoundDescription", {
+          defaultValue:
+            "This stock count session may have been removed or you don't have access to it.",
+        })}
+      />
     );
 
   const isDraft = session.status === "draft";
@@ -204,15 +224,38 @@ export default function StockCountDetailPage() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label required>{t("stockCounts.batch")}</Label>
+                <div className="flex items-center gap-1.5">
+                  <Label required>{t("stockCounts.batch")}</Label>
+                  {batchesBusy && (
+                    <Loader2 className="size-3 animate-spin text-muted-foreground" />
+                  )}
+                </div>
                 <Select
                   value={newItem.batchId}
                   onValueChange={(v) => setNewItem({ ...newItem, batchId: v })}
+                  disabled={!newItem.variantId || batchesLoading}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select batch..." />
+                    <SelectValue
+                      placeholder={
+                        batchesLoading
+                          ? t("stockCounts.loadingBatches", {
+                              defaultValue: "Loading batches…",
+                            })
+                          : "Select batch..."
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
+                    {!batchesLoading &&
+                      newItem.variantId &&
+                      (batchData?.data?.items ?? []).length === 0 && (
+                        <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                          {t("stockCounts.noBatchesAvailable", {
+                            defaultValue: "No batches available.",
+                          })}
+                        </div>
+                      )}
                     {(batchData?.data?.items ?? []).map((b) => (
                       <SelectItem key={b.id} value={b.id}>
                         {b.batchNumber}

@@ -29,6 +29,8 @@ import { usePermission, useCurrentUser } from "@/hooks/usePermission";
 import { PERMISSIONS } from "@/lib/permissions";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 import { useTranslation } from "react-i18next";
+import AppEmptyState from "@/components/shared/AppEmptyState";
+import AppErrorState from "@/components/shared/AppErrorState";
 const STEPS = [
   "draft",
   "pending_hospital_approval",
@@ -41,7 +43,9 @@ export default function PurchaseRequestDetailPage() {
   const { t } = useTranslation("purchasing");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data, isLoading } = useGetPurchaseRequestByIdQuery(id!);
+  const { data, isLoading, isError, refetch } = useGetPurchaseRequestByIdQuery(
+    id!,
+  );
   const req = data?.data;
 
   const canHospitalApprove = usePermission(
@@ -76,14 +80,28 @@ export default function PurchaseRequestDetailPage() {
 
   if (isLoading)
     return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  if (isError)
+    return (
       <div className="p-6">
-        <Skeleton className="h-64 w-full" />
+        <AppErrorState onRetry={() => refetch()} />
       </div>
     );
   if (!req)
     return (
-      <div className="p-6 text-muted-foreground">
-        {t("common:actions.notFound")}
+      <div className="p-6">
+        <AppEmptyState
+          title={t("common:actions.notFound")}
+          description={t("requests.notFoundDescription", {
+            defaultValue:
+              "This purchase request may have been removed or you don't have access to it.",
+          })}
+        />
       </div>
     );
 

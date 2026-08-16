@@ -26,7 +26,7 @@ import { Input } from "@/components/primitive/input";
 import { Label } from "@/components/primitive/label";
 import type { Patient } from "@/lib/apiTypes";
 import { formatDate } from "@/lib/formatters";
-
+import AppErrorState from "@/components/shared/AppErrorState";
 export default function PatientsPage() {
   const { t } = useTranslation("patients");
   const navigate = useNavigate();
@@ -36,11 +36,13 @@ export default function PatientsPage() {
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(search);
 
-  const { data, isLoading } = useGetPatientsQuery({
-    page,
-    limit: 20,
-    search: debouncedSearch || undefined,
-  });
+  const { data, isLoading, isFetching, isError, refetch } = useGetPatientsQuery(
+    {
+      page,
+      limit: 20,
+      search: debouncedSearch || undefined,
+    },
+  );
   const [createPatient, { isLoading: creating }] = useCreatePatientMutation();
 
   const [open, setOpen] = useState(false);
@@ -191,14 +193,19 @@ export default function PatientsPage() {
       </div>
 
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-          onRowClick={(r) => navigate(`/patients/${r.id}`)}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+            onRowClick={(r) => navigate(`/patients/${r.id}`)}
+          />
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

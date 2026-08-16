@@ -19,11 +19,12 @@ import {
 } from "@/lib/formatters";
 import type { Batch } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
+import AppErrorState from "@/components/shared/AppErrorState";
 export default function BatchesPage() {
   const [page, setPage] = useState(1);
   const [deptId, setDeptId] = useState("");
   const { data: deptData } = useGetDepartmentsQuery();
-  const { data, isLoading } = useGetBatchesQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useGetBatchesQuery({
     page,
     limit: 20,
     ...(deptId ? { departmentId: deptId } : {}),
@@ -104,13 +105,18 @@ export default function BatchesPage() {
         </Select>
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+          />
+        )}
       </div>
     </div>
   );

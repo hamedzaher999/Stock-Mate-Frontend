@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { Loader2, PlusCircle, Trash2 } from "lucide-react";
 import { useGetQueueQuery } from "@/api/queue.api";
 import {
   useSelectPatientMutation,
@@ -28,6 +28,7 @@ import AppPageHeader from "@/components/shared/AppPageHeader";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { formatRelative } from "@/lib/formatters";
 import type { QueueEntry } from "@/lib/apiTypes";
+import { Skeleton } from "@/components/primitive/skeleton";
 
 interface PrescriptionItem {
   variantId: string;
@@ -56,14 +57,16 @@ export default function ConsultationPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const { data: queueData } = useGetQueueQuery(
-    { status: "waiting" },
-    { pollingInterval: 30000 },
-  );
-  const { data: variantsData } = useGetVariantsQuery({
-    isActive: true,
-    limit: 100,
-  } as { isActive: boolean; limit: number });
+  const {
+    data: queueData,
+    isLoading: queueLoading,
+    isFetching: queueFetching,
+  } = useGetQueueQuery({ status: "waiting" }, { pollingInterval: 30000 });
+  const { data: variantsData, isLoading: variantsLoading } =
+    useGetVariantsQuery({
+      isActive: true,
+      limit: 100,
+    } as { isActive: boolean; limit: number });
   const [selectPatient] = useSelectPatientMutation();
   const [completeConsultation, { isLoading: completing }] =
     useCompleteConsultationMutation();
@@ -235,32 +238,58 @@ export default function ConsultationPage() {
           title={t("consultationRoom")}
           subtitle={t("selectPatientSubtitle")}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {waitingPatients.map((entry) => (
-            <Card
-              key={entry.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleSelectPatient(entry)}
+        {queueLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-24" />
+            ))}
+          </div>
+        ) : (
+          <div className="relative">
+            <div
+              className={
+                queueFetching
+                  ? "pointer-events-none opacity-60 transition-opacity duration-150 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+                  : "transition-opacity duration-150 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+              }
             >
-              <CardContent className="p-4">
-                <p className="font-medium">{entry.patient?.fullName}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatRelative(entry.addedAt)}
-                </p>
-                <StatusBadge
-                  status={entry.status}
-                  domain="queue"
-                  className="mt-2"
-                />
-              </CardContent>
-            </Card>
-          ))}
-          {waitingPatients.length === 0 && (
-            <div className="col-span-full text-center py-12 text-muted-foreground">
-              {t("noPatientsWaiting")}
+              {waitingPatients.map((entry) => (
+                <Card
+                  key={entry.id}
+                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => handleSelectPatient(entry)}
+                >
+                  <CardContent className="p-4">
+                    <p className="font-medium">{entry.patient?.fullName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatRelative(entry.addedAt)}
+                    </p>
+                    <StatusBadge
+                      status={entry.status}
+                      domain="queue"
+                      className="mt-2"
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+              {waitingPatients.length === 0 && !queueFetching && (
+                <div className="col-span-full text-center py-12 text-muted-foreground">
+                  {t("noPatientsWaiting")}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+            {queueFetching && (
+              <div className="absolute inset-0 flex items-start justify-center pt-8">
+                <div className="flex items-center gap-2 rounded-full bg-card border border-border shadow-md px-3 py-1.5 text-xs text-muted-foreground">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span>
+                    {t("common:table.updating", { defaultValue: "Updating…" })}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         {error && <p className="text-xs text-danger mt-4">{error}</p>}
       </div>
     );
@@ -396,16 +425,28 @@ export default function ConsultationPage() {
                       className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-xl bg-muted/50"
                     >
                       <div className="col-span-2 space-y-1.5">
-                        <Label>{t("prescription.variantId")}</Label>
+                        <div className="flex items-center gap-1.5">
+                          <Label>{t("prescription.variantId")}</Label>
+                          {variantsLoading && (
+                            <Loader2 className="size-3 animate-spin text-muted-foreground" />
+                          )}
+                        </div>
                         <Select
                           value={item.variantId}
                           onValueChange={(v) =>
                             updateItem(pi, ii, "variantId", v)
                           }
+                          disabled={variantsLoading}
                         >
                           <SelectTrigger>
                             <SelectValue
-                              placeholder={t("prescription.selectMedication")}
+                              placeholder={
+                                variantsLoading
+                                  ? t("prescription.loadingMedications", {
+                                      defaultValue: "Loading…",
+                                    })
+                                  : t("prescription.selectMedication")
+                              }
                             />
                           </SelectTrigger>
                           <SelectContent>

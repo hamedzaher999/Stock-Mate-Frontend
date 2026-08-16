@@ -28,6 +28,8 @@ import { usePermission } from "@/hooks/usePermission";
 import { useCurrentUser } from "@/hooks/usePermission";
 import { PERMISSIONS } from "@/lib/permissions";
 import { formatDate } from "@/lib/formatters";
+import AppEmptyState from "@/components/shared/AppEmptyState";
+import AppErrorState from "@/components/shared/AppErrorState";
 
 export default function PrescriptionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -36,7 +38,9 @@ export default function PrescriptionDetailPage() {
   const canCancel = usePermission(PERMISSIONS.CANCEL_PRESCRIPTION);
   const canManageAll = usePermission(PERMISSIONS.MANAGE_ALL_PRESCRIPTIONS);
 
-  const { data, isLoading } = useGetPrescriptionByIdQuery(id!);
+  const { data, isLoading, isError, refetch } = useGetPrescriptionByIdQuery(
+    id!,
+  );
   const [cancelRx, { isLoading: cancelling }] = useCancelPrescriptionMutation();
 
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -53,8 +57,25 @@ export default function PrescriptionDetailPage() {
     setCancelOpen(false);
   }
 
-  if (isLoading) return <Skeleton className="h-64 w-full" />;
-  if (!rx) return <p className="text-muted-foreground">{t("notFound")}</p>;
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  if (isError) return <AppErrorState onRetry={() => refetch()} />;
+  if (!rx)
+    return (
+      <AppEmptyState
+        title={t("notFound")}
+        description={t("notFoundDescription", {
+          defaultValue:
+            "This prescription may have been removed or you don't have access to it.",
+        })}
+      />
+    );
 
   const cycleProgress = rx.totalCycles
     ? (rx.currentCycleNumber ?? 0) / rx.totalCycles

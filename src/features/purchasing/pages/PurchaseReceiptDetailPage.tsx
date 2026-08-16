@@ -38,16 +38,24 @@ import {
   useGetPurchaseReceiptImagesQuery,
   useUpdatePurchaseReceiptMutation,
 } from "@/api/purchasing.api";
+import AppEmptyState from "@/components/shared/AppEmptyState";
+import AppErrorState from "@/components/shared/AppErrorState";
 export default function PurchaseReceiptDetailPage() {
   const { t } = useTranslation("purchasing");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useGetPurchaseReceiptByIdQuery(id!);
+  const { data, isLoading, isError, refetch } = useGetPurchaseReceiptByIdQuery(
+    id!,
+  );
   const receipt = data?.data;
 
-  const { data: imagesData, isLoading: imagesLoading } =
-    useGetPurchaseReceiptImagesQuery(id!, { skip: !id });
+  const {
+    data: imagesData,
+    isLoading: imagesLoading,
+    isError: imagesError,
+    refetch: refetchImages,
+  } = useGetPurchaseReceiptImagesQuery(id!, { skip: !id });
   const images = imagesData?.data ?? [];
 
   const [confirmReceipt, { isLoading: confirming }] =
@@ -73,14 +81,28 @@ export default function PurchaseReceiptDetailPage() {
 
   if (isLoading)
     return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  if (isError)
+    return (
       <div className="p-6">
-        <Skeleton className="h-64 w-full" />
+        <AppErrorState onRetry={() => refetch()} />
       </div>
     );
   if (!receipt)
     return (
-      <div className="p-6 text-muted-foreground">
-        {t("common:actions.notFound")}
+      <div className="p-6">
+        <AppEmptyState
+          title={t("common:actions.notFound")}
+          description={t("receipts.notFoundDescription", {
+            defaultValue:
+              "This purchase receipt may have been removed or you don't have access to it.",
+          })}
+        />
       </div>
     );
 
@@ -310,12 +332,24 @@ export default function PurchaseReceiptDetailPage() {
                   ))}
                 </div>
               )}
-              {!imagesLoading && images.length === 0 && (
+              {!imagesLoading && imagesError && (
+                <AppErrorState
+                  title={t("receipts.detail.imagesErrorTitle", {
+                    defaultValue: "Couldn't load images",
+                  })}
+                  description={t("receipts.detail.imagesErrorDescription", {
+                    defaultValue:
+                      "There was a problem loading the receipt images.",
+                  })}
+                  onRetry={() => refetchImages()}
+                />
+              )}
+              {!imagesLoading && !imagesError && images.length === 0 && (
                 <p className="text-sm text-muted-foreground">
                   {t("receipts.detail.noImages")}
                 </p>
               )}
-              {!imagesLoading && images.length > 0 && (
+              {!imagesLoading && !imagesError && images.length > 0 && (
                 <div className="grid grid-cols-2 gap-2">
                   {images.map((img, i) => (
                     <button

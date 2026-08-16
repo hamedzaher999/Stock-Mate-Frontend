@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme inline {
   --color-background: var(--background);
@@ -28,26 +28,26 @@
 }
 
 :root {
-  --background: #F5F6FA;
+  --background: #f5f6fa;
   --foreground: #111827;
-  --card: #FFFFFF;
+  --card: #ffffff;
   --card-foreground: #111827;
-  --primary: #C8102E;
-  --primary-foreground: #FFFFFF;
-  --secondary: #F0F1F6;
+  --primary: #c8102e;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f1f6;
   --secondary-foreground: #374151;
-  --muted: #F0F1F6;
-  --muted-foreground: #6B7280;
-  --accent: #FEF2F2;
-  --accent-foreground: #C8102E;
-  --border: #E2E4EC;
-  --input: #FFFFFF;
-  --ring: #C8102E;
+  --muted: #f0f1f6;
+  --muted-foreground: #6b7280;
+  --accent: #fef2f2;
+  --accent-foreground: #c8102e;
+  --border: #e2e4ec;
+  --input: #ffffff;
+  --ring: #c8102e;
   --radius: 0.5rem;
-  --success: #16A34A;
-  --warning: #D97706;
-  --danger: #C8102E;
-  --info: #2563EB;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #c8102e;
+  --info: #2563eb;
   --font-size-base: 14px;
   --font-scale: 1;
   --density: comfortable;
@@ -55,21 +55,21 @@
 }
 
 .dark {
-  --background: #0F1117;
-  --foreground: #F9FAFB;
-  --card: #1A1D27;
-  --card-foreground: #F9FAFB;
-  --primary: #E53E5A;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1F2235;
-  --secondary-foreground: #D1D5DB;
-  --muted: #1F2235;
-  --muted-foreground: #9CA3AF;
-  --accent: #2D1B1E;
-  --accent-foreground: #E53E5A;
-  --border: #2E3147;
-  --input: #1F2235;
-  --ring: #E53E5A;
+  --background: #0f1117;
+  --foreground: #f9fafb;
+  --card: #1a1d27;
+  --card-foreground: #f9fafb;
+  --primary: #e53e5a;
+  --primary-foreground: #ffffff;
+  --secondary: #1f2235;
+  --secondary-foreground: #d1d5db;
+  --muted: #1f2235;
+  --muted-foreground: #9ca3af;
+  --accent: #2d1b1e;
+  --accent-foreground: #e53e5a;
+  --border: #2e3147;
+  --input: #1f2235;
+  --ring: #e53e5a;
 }
 
 * {
@@ -82,22 +82,43 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Geist', system-ui, sans-serif;
+  font-family: "Inter", "Geist", system-ui, sans-serif;
   background-color: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+/* Refetch bar animation */
+@keyframes refetch-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(150%);
+  }
+  100% {
+    transform: translateX(150%);
+  }
+}
 /* Scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
 
 /* RTL support via data-dir */
 [dir="rtl"] {
-  font-family: 'Geist', 'Noto Sans Arabic', system-ui, sans-serif;
+  font-family: "Geist", "Noto Sans Arabic", system-ui, sans-serif;
 }
 
 /* Density */

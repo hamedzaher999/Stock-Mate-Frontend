@@ -1,4 +1,5 @@
-import { Plus, UserCircle } from "lucide-react";
+import AppErrorState from "@/components/shared/AppErrorState";
+import { Loader2, Plus, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -63,7 +64,7 @@ export default function UsersPage() {
   const [departmentId, setDepartmentId] = useState("");
   const [status, setStatus] = useState("");
 
-  const { data, isLoading } = useGetUsersQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useGetUsersQuery({
     page,
     limit: 20,
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
@@ -73,6 +74,7 @@ export default function UsersPage() {
   });
   const [create, { isLoading: creating }] = useCreateUserMutation();
   const [updateStatus] = useUpdateUserStatusMutation();
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const { data: rolesData } = useGetRolesQuery();
   const { data: deptsData } = useGetDepartmentsQuery();
 
@@ -102,19 +104,32 @@ export default function UsersPage() {
     setForm(EMPTY);
   };
 
-  function handleToggle(user: UserListItem, newActive: boolean) {
+  async function handleToggle(user: UserListItem, newActive: boolean) {
     if (!newActive) {
       // Confirm before deactivating
       setDeactivateTarget(user);
     } else {
-      updateStatus({ id: user.id, status: "active" });
+      setTogglingId(user.id);
+      try {
+        await updateStatus({ id: user.id, status: "active" }).unwrap();
+      } finally {
+        setTogglingId(null);
+      }
     }
   }
 
-  function confirmDeactivate() {
+  async function confirmDeactivate() {
     if (!deactivateTarget) return;
-    updateStatus({ id: deactivateTarget.id, status: "inactive" });
-    setDeactivateTarget(null);
+    setTogglingId(deactivateTarget.id);
+    try {
+      await updateStatus({
+        id: deactivateTarget.id,
+        status: "inactive",
+      }).unwrap();
+    } finally {
+      setTogglingId(null);
+      setDeactivateTarget(null);
+    }
   }
 
   const columns: ColumnDef<UserListItem>[] = [
@@ -143,13 +158,19 @@ export default function UsersPage() {
       cell: (r) => {
         const isSelf = currentUser?.id === r.id;
         const isSuperAdmin = r.role?.isSuperAdmin === true;
+        const isToggling = togglingId === r.id;
         return (
-          <Switch
-            checked={r.status === "active"}
-            onCheckedChange={(v) => handleToggle(r, v)}
-            onClick={(e) => e.stopPropagation()}
-            disabled={isSelf || isSuperAdmin}
-          />
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={r.status === "active"}
+              onCheckedChange={(v) => handleToggle(r, v)}
+              onClick={(e) => e.stopPropagation()}
+              disabled={isSelf || isSuperAdmin || isToggling}
+            />
+            {isToggling && (
+              <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+            )}
+          </div>
         );
       },
     },
@@ -260,13 +281,18 @@ export default function UsersPage() {
         </Select>
       </div>
 
-      <AppDataTable
-        data={data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={data?.data}
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* Create Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>

@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, UserPlus, ScanLine, CheckCircle2 } from "lucide-react";
+import {
+  Search,
+  UserPlus,
+  ScanLine,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 import { Input } from "@/components/primitive/input";
 import { Button } from "@/components/primitive/button";
 import { Label } from "@/components/primitive/label";
@@ -190,9 +196,10 @@ export default function PatientQuickFindPanel({
           </div>
 
           {lookupLoading && (
-            <p className="text-xs text-muted-foreground">
-              {t("quickFind.searching")}
-            </p>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Loader2 className="size-3.5 animate-spin" />
+              <span>{t("quickFind.searching")}</span>
+            </div>
           )}
 
           {lookupSingle && (
@@ -280,9 +287,10 @@ export default function PatientQuickFindPanel({
             leftIcon={<Search />}
           />
           {nameLoading && (
-            <p className="text-xs text-muted-foreground">
-              {t("quickFind.searching")}
-            </p>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Loader2 className="size-3.5 animate-spin" />
+              <span>{t("quickFind.searching")}</span>
+            </div>
           )}
           {!nameLoading && debouncedNameSearch && nameResults.length === 0 && (
             <div className="rounded-xl border border-dashed border-border p-3 flex items-center justify-between gap-3">

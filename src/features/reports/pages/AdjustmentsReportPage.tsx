@@ -64,7 +64,7 @@ export default function AdjustmentsReportPage() {
     ...(adjustmentType ? { adjustmentType } : {}),
   };
 
-  const { data, isLoading, isFetching } =
+  const { data, isLoading, isFetching, isError, refetch } =
     useGetAdjustmentsReportQuery(queryParams);
   const result = data?.data;
 
@@ -142,6 +142,9 @@ export default function AdjustmentsReportPage() {
       onExport={handleExport}
       exporting={exporting}
       isLoading={isLoading}
+      isFetching={isFetching}
+      isError={isError}
+      onRetry={refetch}
       filters={
         <>
           <div className="space-y-1.5">
@@ -316,7 +319,8 @@ export default function AdjustmentsReportPage() {
         <AppDataTable
           data={result?.rows}
           columns={columns}
-          isLoading={isFetching}
+          isLoading={false}
+          isFetching={isFetching}
           rowKey={(r) => r.id}
           onPageChange={setPage}
         />

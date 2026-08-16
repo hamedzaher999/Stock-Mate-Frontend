@@ -14,6 +14,7 @@ import {
 } from "@/components/primitive/select";
 import { formatDate } from "@/lib/formatters";
 import type { Prescription } from "@/lib/apiTypes";
+import AppErrorState from "@/components/shared/AppErrorState";
 const PRESCRIPTION_STATUSES = ["active", "completed", "cancelled"] as const;
 export default function PrescriptionsPage() {
   const { t } = useTranslation("prescriptions");
@@ -21,11 +22,12 @@ export default function PrescriptionsPage() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
 
-  const { data, isLoading } = useGetPrescriptionsQuery({
-    page,
-    limit: 20,
-    ...(status ? { status } : {}),
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetPrescriptionsQuery({
+      page,
+      limit: 20,
+      ...(status ? { status } : {}),
+    });
 
   const columns: ColumnDef<Prescription>[] = [
     {
@@ -95,14 +97,19 @@ export default function PrescriptionsPage() {
         </Select>
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-          onRowClick={(r) => navigate(`/prescriptions/${r.id}`)}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+            onRowClick={(r) => navigate(`/prescriptions/${r.id}`)}
+          />
+        )}
       </div>
     </div>
   );

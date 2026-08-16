@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import AppDataTable from "@/components/shared/AppDataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -329,6 +329,16 @@ function VariantsTab() {
   const { data: unitsData } = useGetUnitsQuery();
   const [create, { isLoading: creating }] = useCreateVariantMutation();
   const [updateStatus] = useUpdateVariantStatusMutation();
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  async function handleStatusToggle(id: string, isActive: boolean) {
+    setTogglingId(id);
+    try {
+      await updateStatus({ id, isActive }).unwrap();
+    } finally {
+      setTogglingId(null);
+    }
+  }
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
@@ -369,11 +379,17 @@ function VariantsTab() {
       key: "status",
       header: t("variants.status"),
       cell: (r) => (
-        <Switch
-          checked={r.isActive}
-          onCheckedChange={(v) => updateStatus({ id: r.id, isActive: v })}
-          onClick={(e) => e.stopPropagation()}
-        />
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={r.isActive}
+            onCheckedChange={(v) => handleStatusToggle(r.id, v)}
+            onClick={(e) => e.stopPropagation()}
+            disabled={togglingId === r.id}
+          />
+          {togglingId === r.id && (
+            <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+          )}
+        </div>
       ),
     },
   ];

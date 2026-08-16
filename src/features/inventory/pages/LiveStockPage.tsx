@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useGetLiveStockQuery } from "@/api/inventory.api";
 import { Card, CardContent } from "@/components/primitive/card";
 import { Badge } from "@/components/primitive/badge";
@@ -14,6 +14,7 @@ import DepartmentSelector, {
 } from "@/components/shared/DepartmentSelector";
 import type { LiveStockRow } from "@/lib/apiTypes";
 import { cn } from "@/lib/utils";
+import AppErrorState from "@/components/shared/AppErrorState";
 const EXPIRY_WARNING_DAYS = 15;
 
 function isExpiringSoonDays(
@@ -172,10 +173,11 @@ export default function LiveStockPage() {
     }
   }, [resolved, deptId]);
 
-  const { data, isLoading } = useGetLiveStockQuery(
-    { departmentId: deptId, page, limit: 20 },
-    { skip: !deptId },
-  );
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetLiveStockQuery(
+      { departmentId: deptId, page, limit: 20 },
+      { skip: !deptId },
+    );
 
   if (deptLoading)
     return (
@@ -195,6 +197,10 @@ export default function LiveStockPage() {
       </div>
     );
   }
+
+  const items = data?.data?.items ?? [];
+  const showInitialSkeleton = isLoading;
+  const showRefetchOverlay = isFetching && !isLoading;
 
   return (
     <div>
@@ -216,7 +222,7 @@ export default function LiveStockPage() {
         </p>
       )}
 
-      {isLoading && (
+      {deptId && showInitialSkeleton && (
         <div className="space-y-3">
           {[...Array(6)].map((_, i) => (
             <Skeleton key={i} className="h-20" />
@@ -224,29 +230,78 @@ export default function LiveStockPage() {
         </div>
       )}
 
-      {data && (
-        <div className="space-y-3">
-          {data.data?.items?.map((row) => (
-            <StockCard
-              key={row.variantId}
-              row={row}
-              thresholds={{
-                minimumStock: row.minimumStock ?? undefined,
-                maximumStock: row.maximumStock ?? undefined,
-              }}
-            />
-          ))}
-          {data.data && (
-            <AppPagination
-              page={data.data.page}
-              totalPages={data.data.totalPages}
-              total={data.data.total}
-              limit={data.data.limit}
-              onPageChange={setPage}
-            />
-          )}
-        </div>
+      {deptId && isError && !showInitialSkeleton && (
+        <AppErrorState onRetry={() => refetch()} />
       )}
+
+      {deptId &&
+        !showInitialSkeleton &&
+        !isError &&
+        items.length === 0 &&
+        !showRefetchOverlay && (
+          <AppEmptyState
+            title={t("liveStock.emptyTitle", {
+              defaultValue: "No stock found",
+            })}
+            description={t("liveStock.emptyDescription", {
+              defaultValue: "This department has no recorded stock yet.",
+            })}
+          />
+        )}
+
+      {deptId &&
+        !showInitialSkeleton &&
+        !isError &&
+        (items.length > 0 || showRefetchOverlay) && (
+          <div className="relative">
+            <div
+              className={
+                showRefetchOverlay
+                  ? "pointer-events-none opacity-60 transition-opacity duration-150 space-y-3"
+                  : "transition-opacity duration-150 space-y-3"
+              }
+            >
+              {items.length === 0 ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-20" />
+                  ))}
+                </div>
+              ) : (
+                items.map((row) => (
+                  <StockCard
+                    key={row.variantId}
+                    row={row}
+                    thresholds={{
+                      minimumStock: row.minimumStock ?? undefined,
+                      maximumStock: row.maximumStock ?? undefined,
+                    }}
+                  />
+                ))
+              )}
+              {data?.data && items.length > 0 && (
+                <AppPagination
+                  page={data.data.page}
+                  totalPages={data.data.totalPages}
+                  total={data.data.total}
+                  limit={data.data.limit}
+                  onPageChange={setPage}
+                />
+              )}
+            </div>
+
+            {showRefetchOverlay && (
+              <div className="absolute inset-0 flex items-start justify-center pt-10">
+                <div className="flex items-center gap-2 rounded-full bg-card border border-border shadow-md px-3 py-1.5 text-xs text-muted-foreground">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span>
+                    {t("liveStock.updating", { defaultValue: "Updating…" })}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
     </div>
   );
 }

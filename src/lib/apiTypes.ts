@@ -770,3 +770,61 @@ export interface PatientVisitsReportResult {
   rows: PaginatedResult<PatientVisitsReportRow>;
   groupBy: ReportGroupBy;
 }
+export interface DisposalTransferItem {
+  id: string;
+  sourceType: string; // "adjustment" | "near_expiry"
+  adjustmentId?: string;
+  variantId: string;
+  batchId: string;
+  shippedQuantity: number;
+  confirmedQuantity?: number;
+  quantityDiscrepancy?: number;
+  variant: { id: string; variantName: string; sku: string };
+  batch: BatchRef;
+}
+
+export interface DisposalTransfer {
+  id: string;
+  departmentId: string;
+  department: DepartmentRef;
+  status: string; // "initiated" | "confirmed" | "cancelled"
+  initiatedById: string;
+  initiatedBy: UserRef;
+  initiatedAt: string;
+  confirmedById?: string;
+  confirmedBy?: UserRef;
+  confirmedAt?: string;
+  cancelledById?: string;
+  cancelledBy?: UserRef;
+  cancelledAt?: string;
+  cancelReason?: string;
+  notes?: string;
+  items: DisposalTransferItem[];
+}
+
+export interface DisposalCandidateAdjustment {
+  id: string;
+  adjustmentType: string;
+  quantity: number;
+  createdAt: string;
+  variant: { id: string; variantName: string; sku: string };
+  batch?: { id: string; batchNumber: string; expirationDate?: string };
+}
+
+export interface DisposalCandidateNearExpiry {
+  batchId: string;
+  batchNumber: string;
+  variantId: string;
+  variantName: string;
+  sku: string;
+  quantity: number;
+  expirationDate: string;
+  allowedDays: number;
+  daysRemaining: number;
+}
+
+export interface DisposalCandidates {
+  damaged: DisposalCandidateAdjustment[];
+  expired: DisposalCandidateAdjustment[];
+  nearExpiry: DisposalCandidateNearExpiry[];
+}

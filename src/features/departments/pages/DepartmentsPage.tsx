@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import AppDataTable from "@/components/shared/AppDataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -36,6 +36,7 @@ import {
   useCreateDepartmentMutation,
   useUpdateDepartmentStatusMutation,
 } from "@/api/departments.api";
+import AppErrorState from "@/components/shared/AppErrorState";
 const DEPT_TYPES = [
   "clinical",
   "pharmacy",
@@ -47,9 +48,21 @@ const DEPT_TYPES = [
 
 export default function DepartmentsPage() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetDepartmentsQuery({ page, limit: 20 });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetDepartmentsQuery({ page, limit: 20 });
   const [create, { isLoading: creating }] = useCreateDepartmentMutation();
-  const [updateStatus] = useUpdateDepartmentStatusMutation();
+  const [updateStatus, { isLoading: updatingStatus }] =
+    useUpdateDepartmentStatusMutation();
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  async function handleStatusToggle(id: string, isActive: boolean) {
+    setTogglingId(id);
+    try {
+      await updateStatus({ id, isActive }).unwrap();
+    } finally {
+      setTogglingId(null);
+    }
+  }
   const [updateDepartment, { isLoading: savingDetails }] =
     useUpdateDepartmentMutation();
   const [updateManager, { isLoading: savingManager }] =
@@ -155,11 +168,17 @@ export default function DepartmentsPage() {
       key: "toggle",
       header: t("fields.isActive"),
       cell: (r) => (
-        <Switch
-          checked={r.isActive}
-          onCheckedChange={(v) => updateStatus({ id: r.id, isActive: v })}
-          onClick={(e) => e.stopPropagation()}
-        />
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={r.isActive}
+            onCheckedChange={(v) => handleStatusToggle(r.id, v)}
+            onClick={(e) => e.stopPropagation()}
+            disabled={togglingId === r.id}
+          />
+          {togglingId === r.id && (
+            <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+          )}
+        </div>
       ),
     },
     {
@@ -191,14 +210,19 @@ export default function DepartmentsPage() {
           </Button>
         }
       />
-      <AppDataTable
-        data={data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-        onRowClick={openDetail}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={data?.data}
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+          onRowClick={openDetail}
+        />
+      )}
 
       {/* Create Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>

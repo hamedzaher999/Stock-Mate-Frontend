@@ -22,9 +22,10 @@ import {
   ListOrdered,
   CalendarClock,
   Activity,
-  Shield,
   BarChart4,
   Sparkles,
+  Trash2,
+  Search,
 } from "lucide-react";
 import { PERMISSIONS } from "@/lib/permissions";
 
@@ -57,7 +58,23 @@ export const NAV_SECTIONS: NavSection[] = [
       { labelKey: "nav:assistant", path: "/assistant", icon: Sparkles },
     ],
   },
-
+  {
+    titleKey: "nav:sections.disposal",
+    items: [
+      {
+        labelKey: "nav:disposalTransfers",
+        path: "/disposal/transfers",
+        icon: Trash2,
+        permission: PERMISSIONS.VIEW_DISPOSAL,
+      },
+      {
+        labelKey: "nav:disposalCandidates",
+        path: "/disposal/candidates",
+        icon: Search,
+        permission: PERMISSIONS.VIEW_DISPOSAL,
+      },
+    ],
+  },
   {
     titleKey: "nav:sections.clinical",
     items: [

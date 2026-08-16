@@ -6,6 +6,7 @@ import {
   Package,
   Activity,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import {
   Card,
@@ -85,7 +86,11 @@ export default function DashboardPage() {
   const { data: unreadData } = useGetUnreadCountQuery();
   const { resolved: queueDept, noAccess: queueNoAccess } =
     useDepartmentSelector("queue");
-  const { data: queueData } = useGetQueueQuery(
+  const {
+    data: queueData,
+    isLoading: queueLoading,
+    isFetching: queueFetching,
+  } = useGetQueueQuery(
     { status: "waiting", limit: 5, departmentId: queueDept?.id },
     { skip: !canManageQueue || !queueDept },
   );
@@ -183,36 +188,68 @@ export default function DashboardPage() {
                   })}
                 </p>
               )}
-              {!queueNoAccess && queueData?.data?.items?.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  {t("queue.empty")}
-                </p>
-              )}
-              {queueData?.data?.items?.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                >
-                  <div>
-                    <p className="text-sm font-medium">
-                      {entry.patient?.fullName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {entry.department?.name}
-                    </p>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDateTime(entry.addedAt)}
-                  </p>
-                </div>
-              ))}
-              {!queueData && (
+              {!queueNoAccess && queueLoading && (
                 <div className="space-y-2">
                   {[...Array(3)].map((_, i) => (
                     <Skeleton key={i} className="h-10" />
                   ))}
                 </div>
               )}
+              {!queueNoAccess &&
+                !queueLoading &&
+                (queueData?.data?.items?.length ?? 0) === 0 &&
+                !queueFetching && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {t("queue.empty")}
+                  </p>
+                )}
+              {!queueNoAccess &&
+                !queueLoading &&
+                ((queueData?.data?.items?.length ?? 0) > 0 ||
+                  queueFetching) && (
+                  <div className="relative">
+                    <div
+                      className={
+                        queueFetching
+                          ? "pointer-events-none opacity-60 transition-opacity duration-150"
+                          : "transition-opacity duration-150"
+                      }
+                    >
+                      {queueData?.data?.items?.map((entry) => (
+                        <div
+                          key={entry.id}
+                          className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                        >
+                          <div>
+                            <p className="text-sm font-medium">
+                              {entry.patient?.fullName}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {entry.department?.name}
+                            </p>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDateTime(entry.addedAt)}
+                          </p>
+                        </div>
+                      ))}
+                      {(queueData?.data?.items?.length ?? 0) === 0 && (
+                        <div className="space-y-2">
+                          {[...Array(2)].map((_, i) => (
+                            <Skeleton key={i} className="h-10" />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {queueFetching && (
+                      <div className="absolute inset-0 flex items-start justify-center pt-4">
+                        <div className="flex items-center gap-1.5 rounded-full bg-card border border-border shadow-md px-2.5 py-1 text-xs text-muted-foreground">
+                          <Loader2 className="size-3 animate-spin" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
             </CardContent>
           </Card>
         )}

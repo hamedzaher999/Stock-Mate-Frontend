@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import {
   useGetDispenseQueueQuery,
   useLookupDispenseQueueQuery,
@@ -23,9 +23,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/primitive/dialog";
-import { formatDate, formatRelative } from "@/lib/formatters";
+import { formatRelative } from "@/lib/formatters";
 import type { DispenseQueueEntry } from "@/lib/apiTypes";
 import {
   Select,
@@ -34,6 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/primitive/select";
+import AppErrorState from "@/components/shared/AppErrorState";
+import { Skeleton } from "@/components/primitive/skeleton";
 function DispenseForm({
   prescriptionId,
   onClose,
@@ -42,7 +43,12 @@ function DispenseForm({
   onClose: () => void;
 }) {
   const { t } = useTranslation("pharmacy");
-  const { data: rxData } = useGetPrescriptionByIdQuery(prescriptionId);
+  const {
+    data: rxData,
+    isLoading: rxLoading,
+    isError: rxError,
+    refetch: refetchRx,
+  } = useGetPrescriptionByIdQuery(prescriptionId);
   const [dispense, { isLoading }] = useDispensePrescriptionMutation();
   const rx = rxData?.data;
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -72,12 +78,26 @@ function DispenseForm({
     }
   }
 
+  if (rxLoading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-48" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
+  }
+
+  if (rxError) {
+    return <AppErrorState onRetry={() => refetchRx()} />;
+  }
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
         {t("dispense.patient")}: <strong>{rx?.patient?.fullName}</strong>
       </p>
-      <p className="text-xs text-muted-foreground bg-info/10 text-info rounded-xl px-3 py-2">
+      <p className="text-xs text-muted-foreground bg-info/10 rounded-xl px-3 py-2">
         {t("dispense.batchInfo")}
       </p>
       {items.map((item) => {
@@ -146,11 +166,13 @@ export default function DispenseQueuePage() {
     string | null
   >(null);
 
-  const { data, isLoading } = useGetDispenseQueueQuery({ page, limit: 20 });
-  const { data: lookupData } = useLookupDispenseQueueQuery(
-    { [lookupField]: searchTrigger },
-    { skip: !searchTrigger },
-  );
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetDispenseQueueQuery({ page, limit: 20 });
+  const { data: lookupData, isFetching: lookupFetching } =
+    useLookupDispenseQueueQuery(
+      { [lookupField]: searchTrigger },
+      { skip: !searchTrigger },
+    );
 
   const columns: ColumnDef<DispenseQueueEntry>[] = [
     {
@@ -248,7 +270,15 @@ export default function DispenseQueuePage() {
         </CardContent>
         {searchTrigger && (
           <CardContent className="pt-0">
-            {lookupResults.length === 0 && (
+            {lookupFetching && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+                <Loader2 className="size-3.5 animate-spin" />
+                <span>
+                  {t("dispenseQueue.searching", { defaultValue: "Searching…" })}
+                </span>
+              </div>
+            )}
+            {!lookupFetching && lookupResults.length === 0 && (
               <p className="text-sm text-muted-foreground">
                 {t("dispenseQueue.noResults")}
               </p>
@@ -284,13 +314,18 @@ export default function DispenseQueuePage() {
 
       {/* Full queue */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+          />
+        )}
       </div>
 
       {/* Dispense dialog */}

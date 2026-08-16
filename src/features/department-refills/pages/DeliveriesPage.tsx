@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { usePermission } from "@/hooks/usePermission";
 import { PERMISSIONS } from "@/lib/permissions";
+import AppErrorState from "@/components/shared/AppErrorState";
 const STATUSES = ["all", "pending", "confirmed"];
 
 export default function DeliveriesPage() {
@@ -26,11 +27,12 @@ export default function DeliveriesPage() {
   const canConfirm = usePermission(PERMISSIONS.CONFIRM_DEPARTMENT_DELIVERY);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("all");
-  const { data, isLoading } = useGetDeliveriesQuery({
-    page,
-    limit: 20,
-    ...(status !== "all" ? { status } : {}),
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetDeliveriesQuery({
+      page,
+      limit: 20,
+      ...(status !== "all" ? { status } : {}),
+    });
 
   const columns: ColumnDef<Delivery>[] = [
     {
@@ -97,14 +99,19 @@ export default function DeliveriesPage() {
           </Select>
         }
       />
-      <AppDataTable
-        data={data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-        onRowClick={(r) => navigate(`/refills/deliveries/${r.id}`)}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={data?.data}
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+          onRowClick={(r) => navigate(`/refills/deliveries/${r.id}`)}
+        />
+      )}
     </div>
   );
 }

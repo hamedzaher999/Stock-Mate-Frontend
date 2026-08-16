@@ -1,8 +1,10 @@
 {
+  "disposalTransfers": "Disposal Transfers",
   "assistant": "Assistant",
   "reports": "Reports",
   "mySessions": "My Sessions",
   "sections": {
+    "disposal": "Disposal",
     "general": "General",
     "clinical": "Clinical",
     "pharmacy": "Pharmacy",

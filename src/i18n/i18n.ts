@@ -24,6 +24,7 @@ import enStatus from "./en/status.json";
 import enDashboard from "./en/dashboard.json";
 import enSessions from "./en/sessions.json";
 import enReports from "./en/reports.json";
+import enDisposal from "./en/disposal.json";
 
 import arCommon from "./ar/common.json";
 import arAuth from "./ar/auth.json";
@@ -64,6 +65,7 @@ i18n
           common: enCommon,
           reports: enReports,
           auth: enAuth,
+          disposal: enDisposal,
           sessions: enSessions,
           nav: enNav,
           patients: enPatients,

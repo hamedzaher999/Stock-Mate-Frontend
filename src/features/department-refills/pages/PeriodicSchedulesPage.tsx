@@ -23,10 +23,12 @@ import { formatDate } from "@/lib/formatters";
 import type { PeriodicSchedule } from "@/lib/apiTypes";
 import type { ColumnDef } from "@/components/shared/AppDataTable";
 import { useTranslation } from "react-i18next";
+import AppErrorState from "@/components/shared/AppErrorState";
 export default function PeriodicSchedulesPage() {
   const { t } = useTranslation("refills");
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetPeriodicSchedulesQuery({ page, limit: 20 });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetPeriodicSchedulesQuery({ page, limit: 20 });
   const [cancel] = useCancelPeriodicScheduleMutation();
   const [selected, setSelected] = useState<PeriodicSchedule | null>(null);
   const [reason, setReason] = useState("");
@@ -97,13 +99,18 @@ export default function PeriodicSchedulesPage() {
   return (
     <div className="p-6">
       <AppPageHeader title={t("schedules.title")} />
-      <AppDataTable
-        data={data?.data}
-        columns={columns}
-        isLoading={isLoading}
-        rowKey={(r) => r.id}
-        onPageChange={setPage}
-      />
+      {isError && !isLoading ? (
+        <AppErrorState onRetry={() => refetch()} />
+      ) : (
+        <AppDataTable
+          data={data?.data}
+          columns={columns}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          rowKey={(r) => r.id}
+          onPageChange={setPage}
+        />
+      )}
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent>

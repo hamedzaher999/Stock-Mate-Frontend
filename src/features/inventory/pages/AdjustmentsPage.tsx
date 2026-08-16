@@ -32,6 +32,8 @@ import { Label } from "@/components/primitive/label";
 import { Textarea } from "@/components/primitive/textarea";
 import { formatDateTime } from "@/lib/formatters";
 import type { Adjustment } from "@/lib/apiTypes";
+import AppErrorState from "@/components/shared/AppErrorState";
+import { Loader2 } from "lucide-react";
 
 export default function AdjustmentsPage() {
   const { t } = useTranslation("inventory");
@@ -49,13 +51,18 @@ export default function AdjustmentsPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { data, isLoading } = useGetAdjustmentsQuery({ page, limit: 20 });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetAdjustmentsQuery({ page, limit: 20 });
   const { data: variantsData } = useGetVariantsQuery({
     isActive: true,
     limit: 100,
   } as { isActive: boolean; limit: number });
   const { data: deptData } = useGetDepartmentsQuery();
-  const { data: batchData } = useGetBatchesQuery(
+  const {
+    data: batchData,
+    isLoading: batchesLoading,
+    isFetching: batchesFetching,
+  } = useGetBatchesQuery(
     {
       variantId: form.variantId,
       departmentId: form.departmentId,
@@ -63,6 +70,7 @@ export default function AdjustmentsPage() {
     } as { variantId: string; departmentId: string; limit: number },
     { skip: !form.variantId || !form.departmentId },
   );
+  const batchesBusy = batchesLoading || batchesFetching;
   const [createAdjustment, { isLoading: creating }] =
     useCreateAdjustmentMutation();
 
@@ -175,13 +183,18 @@ export default function AdjustmentsPage() {
         }
       />
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <AppDataTable
-          data={data?.data}
-          columns={columns}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onPageChange={setPage}
-        />
+        {isError && !isLoading ? (
+          <AppErrorState onRetry={() => refetch()} />
+        ) : (
+          <AppDataTable
+            data={data?.data}
+            columns={columns}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            rowKey={(r) => r.id}
+            onPageChange={setPage}
+          />
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -238,15 +251,41 @@ export default function AdjustmentsPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label required>{t("adjustments.batch")}</Label>
+              <div className="flex items-center gap-1.5">
+                <Label required>{t("adjustments.batch")}</Label>
+                {batchesBusy && (
+                  <Loader2 className="size-3 animate-spin text-muted-foreground" />
+                )}
+              </div>
               <Select
                 value={form.batchId}
                 onValueChange={(v) => setForm({ ...form, batchId: v })}
+                disabled={
+                  !form.variantId || !form.departmentId || batchesLoading
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t("adjustments.selectBatch")} />
+                  <SelectValue
+                    placeholder={
+                      batchesLoading
+                        ? t("adjustments.loadingBatches", {
+                            defaultValue: "Loading batches…",
+                          })
+                        : t("adjustments.selectBatch")
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
+                  {!batchesLoading &&
+                    form.variantId &&
+                    form.departmentId &&
+                    (batchData?.data?.items ?? []).length === 0 && (
+                      <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                        {t("adjustments.noBatchesAvailable", {
+                          defaultValue: "No batches available.",
+                        })}
+                      </div>
+                    )}
                   {(batchData?.data?.items ?? []).map((b) => (
                     <SelectItem key={b.id} value={b.id}>
                       {b.batchNumber} (Qty:{" "}
