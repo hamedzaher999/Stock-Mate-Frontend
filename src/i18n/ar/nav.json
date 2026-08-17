@@ -1,6 +1,11 @@
 {
+  "destinations": "جهات الوجهة",
+  "disposalSales": "مبيعات الهالك",
+  "disposalTransfers": "تحويلات الإتلاف",
+  "disposalCandidates": "مرشحات الإتلاف",
   "assistant": "المساعد",
   "sections": {
+    "disposal": "الإتلاف",
     "general": "عام",
     "clinical": "العيادات",
     "pharmacy": "الصيدلية",

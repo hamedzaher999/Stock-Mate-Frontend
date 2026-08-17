@@ -29,6 +29,7 @@
   "itemCount": "{{count}} عنصر",
   "prescribedBy": "وصفها د. {{name}}",
   "notFound": "الوصفة غير موجودة",
+  "notFoundDescription": "ربما تمت إزالة هذه الوصفة أو ليس لديك صلاحية الوصول إليها.",
   "days": "أيام",
   "everyN": "كل {{n}} {{unit}}"
 }

@@ -26,6 +26,7 @@ import {
   Sparkles,
   Trash2,
   Search,
+  DollarSign,
 } from "lucide-react";
 import { PERMISSIONS } from "@/lib/permissions";
 
@@ -71,6 +72,18 @@ export const NAV_SECTIONS: NavSection[] = [
         labelKey: "nav:disposalCandidates",
         path: "/disposal/candidates",
         icon: Search,
+        permission: PERMISSIONS.VIEW_DISPOSAL,
+      },
+      {
+        labelKey: "nav:destinations",
+        path: "/destinations",
+        icon: Building2,
+        permission: PERMISSIONS.MANAGE_DESTINATIONS,
+      },
+      {
+        labelKey: "nav:disposalSales",
+        path: "/disposal/sales",
+        icon: DollarSign,
         permission: PERMISSIONS.VIEW_DISPOSAL,
       },
     ],

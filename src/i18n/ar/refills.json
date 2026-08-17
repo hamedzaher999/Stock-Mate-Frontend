@@ -61,7 +61,11 @@
     "qtyAvailable": "{{qty}} متاح",
     "shippedQty": "الكمية المشحونة",
     "stillNeeded": "المطلوب بعد: {{remaining}}",
-    "finalBatchDeliveryHint": "ضع علامة دفعة نهائية إذا كان هذا التسليم يكمل الطلب حتى مع وجود نقص."
+    "finalBatchDeliveryHint": "ضع علامة دفعة نهائية إذا كان هذا التسليم يكمل الطلب حتى مع وجود نقص.",
+    "noConfiguredMaterials": "لا توجد مواد مهيأة لهذا القسم.",
+    "selectDepartmentFirst": "اختر قسماً أولاً",
+    "loadingBatches": "جارٍ تحميل الدفعات…",
+    "noBatchesAvailable": "لا توجد دفعات متاحة."
   },
   "deliveries": {
     "title": "التسليمات",
@@ -78,6 +82,7 @@
     "batch": "الدفعة",
     "notes": "ملاحظات",
     "scopedToYourDepartment": "مخصص لقسمك فقط",
+    "notFoundDescription": "ربما تمت إزالة هذا التسليم أو ليس لديك صلاحية الوصول إليه.",
     "detail": {
       "title": "التسليم {{id}}",
       "items": "العناصر",
@@ -94,7 +99,7 @@
       "confirmedAt": "تم التأكيد في",
       "confirm": "تأكيد التسليم",
       "confirmTitle": "تأكيد الكميات المستلمة",
-      "confirmHint": "أدخل ما وصل فعليًا لكل دفعة. يتم تسجيل الفروقات تلقائيًا.",
+      "confirmHint": "أدخل ما وصل فعلياً لكل دفعة. يتم تسجيل الفروقات تلقائياً.",
       "shipped": "مشحون",
       "received": "مستلم",
       "confirmBtn": "تأكيد التسليم"

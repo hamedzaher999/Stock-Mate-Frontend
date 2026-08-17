@@ -39,6 +39,7 @@
     "oneTime": "One-time",
     "selectMedication": "Select medication...",
     "prescription": "Prescription",
-    "indefinite": "Indefinite"
+    "indefinite": "Indefinite",
+    "loadingMedications": "Loading…"
   }
 }

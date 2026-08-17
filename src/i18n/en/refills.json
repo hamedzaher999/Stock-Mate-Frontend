@@ -61,7 +61,11 @@
     "qtyMax": "Qty (max {{max}})",
     "selectMaterial": "Material...",
     "addItem": "Add Item",
-    "notFound": "Request not found"
+    "notFound": "Request not found",
+    "noConfiguredMaterials": "No materials are configured for this department.",
+    "selectDepartmentFirst": "Select a department first",
+    "loadingBatches": "Loading batches…",
+    "noBatchesAvailable": "No batches available."
   },
   "deliveries": {
     "title": "Deliveries",
@@ -78,6 +82,7 @@
     "batch": "Batch",
     "notes": "Notes",
     "scopedToYourDepartment": "Scoped to your department",
+    "notFoundDescription": "This delivery may have been removed or you don't have access to it.",
     "detail": {
       "title": "Delivery {{id}}",
       "items": "Items",

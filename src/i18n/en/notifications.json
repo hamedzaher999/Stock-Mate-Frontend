@@ -5,6 +5,7 @@
   "unread": "{{count}} unread",
   "empty": "No notifications",
   "new": "New",
+  "errorTitle": "Couldn't load notifications",
   "categories": {
     "all": "All",
     "inventory": "Inventory",
@@ -13,5 +14,18 @@
     "purchasing": "Purchasing",
     "ai_insight": "AI Insights"
   },
-  "viewAll": "View all notifications"
+  "viewAll": "View all notifications",
+  "push": {
+    "bannerTitle": "Enable push notifications",
+    "bannerDescription": "Get notified even when this tab isn't open.",
+    "enable": "Enable",
+    "disable": "Disable",
+    "title": "Push notifications",
+    "statusEnabled": "Enabled on this device.",
+    "statusNotEnabled": "Not enabled on this device.",
+    "statusDenied": "Blocked in browser settings — re-enable it there.",
+    "statusUnsupported": "Not supported in this browser.",
+    "statusEnabling": "Enabling…",
+    "statusError": "Something went wrong."
+  }
 }

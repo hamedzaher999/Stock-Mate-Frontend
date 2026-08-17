@@ -39,6 +39,7 @@
     "oneTime": "مرة واحدة",
     "selectMedication": "اختر الدواء...",
     "prescription": "وصفة",
-    "indefinite": "غير محدد"
+    "indefinite": "غير محدد",
+    "loadingMedications": "جارٍ التحميل…"
   }
 }

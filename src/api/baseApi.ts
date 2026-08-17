@@ -83,6 +83,9 @@ export const baseApi = createApi({
     "Session",
     "PeriodicSchedule",
     "DisposalTransfer",
+    "DisposalTransfer",
+    "Destination",
+    "DisposalSaleRequest",
   ],
   endpoints: () => ({}),
 });

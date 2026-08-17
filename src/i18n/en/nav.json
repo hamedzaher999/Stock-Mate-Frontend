@@ -1,5 +1,8 @@
 {
+  "destinations": "Destinations",
+  "disposalSales": "Disposal Sales",
   "disposalTransfers": "Disposal Transfers",
+  "disposalCandidates": "Disposal Candidates",
   "assistant": "Assistant",
   "reports": "Reports",
   "mySessions": "My Sessions",

@@ -29,6 +29,7 @@
   "itemCount": "{{count}} item(s)",
   "prescribedBy": "Prescribed by Dr. {{name}}",
   "notFound": "Prescription not found.",
+  "notFoundDescription": "This prescription may have been removed or you don't have access to it.",
   "days": "days",
   "everyN": "Every {{n}} {{unit}}(s)"
 }

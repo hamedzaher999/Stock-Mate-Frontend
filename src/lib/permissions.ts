@@ -55,6 +55,9 @@ export const PERMISSIONS = {
 
   VIEW_DISPOSAL: "view_disposal",
   MANAGE_DISPOSAL_TRANSFERS: "manage_disposal_transfers",
+  MANAGE_DESTINATIONS: "manage_destinations",
+  CREATE_DISPOSAL_SALE_REQUEST: "create_disposal_sale_request",
+  APPROVE_DISPOSAL_SALE_REQUEST: "approve_disposal_sale_request",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

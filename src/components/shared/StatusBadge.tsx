@@ -40,7 +40,13 @@ const STATUS_MAP: Record<string, Record<string, BadgeVariant>> = {
     completed: "success",
     removed: "neutral",
   },
-
+  disposalSaleRequest: {
+    pending_approval: "warning",
+    awaiting_confirmation: "info",
+    rejected: "danger",
+    completed: "success",
+    cancelled: "neutral",
+  },
   visit: {
     completed: "success",
     cancelled: "neutral",

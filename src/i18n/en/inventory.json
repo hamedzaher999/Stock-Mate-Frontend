@@ -13,7 +13,10 @@
     "aboveMax": "Above Max",
     "hasExpired": "Has Expired Batch",
     "hasExpiringSoon": "Expiring Soon",
-    "thresholdRange": "Min: {{min}} · Max: {{max}}"
+    "thresholdRange": "Min: {{min}} · Max: {{max}}",
+    "updating": "Updating…",
+    "emptyTitle": "No stock found",
+    "emptyDescription": "This department has no recorded stock yet."
   },
   "adjustments": {
     "title": "Adjustments",
@@ -36,7 +39,9 @@
     "selectMaterial": "Select material...",
     "selectDepartment": "Select department...",
     "selectBatch": "Select batch...",
-    "selectType": "Select type..."
+    "selectType": "Select type...",
+    "loadingBatches": "Loading batches…",
+    "noBatchesAvailable": "No batches available."
   },
   "consumption": {
     "title": "Record Consumption",
@@ -93,10 +98,13 @@
     "departmentRequired": "Department is required",
     "allFieldsRequired": "All fields required",
     "sessionNotFound": "Session not found.",
+    "sessionNotFoundDescription": "This stock count session may have been removed or you don't have access to it.",
     "selectDepartment": "Select department...",
     "selectMaterial": "Select material...",
     "selectBatch": "Select batch...",
-    "createSession": "Create Session"
+    "createSession": "Create Session",
+    "loadingBatches": "Loading batches…",
+    "noBatchesAvailable": "No batches available."
   },
   "batches": {
     "title": "Batches",

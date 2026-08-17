@@ -43,14 +43,16 @@
     "logout": "Sign Out",
     "logoutAll": "Sign Out All Devices",
     "recordAnother": "Record Another",
-    "notFound": "Not found"
+    "notFound": "Not found",
+    "retry": "Retry"
   },
   "table": {
     "noData": "No records found",
     "loading": "Loading...",
     "showing": "Showing {{from}}-{{to}} of {{total}} records",
     "rowsPerPage": "Rows per page",
-    "page": "Page"
+    "page": "Page",
+    "updating": "Updating…"
   },
   "pagination": {
     "first": "First",
@@ -70,7 +72,10 @@
   },
   "status": { "active": "Active", "inactive": "Inactive" },
   "loading": "Loading...",
-  "error": "Something went wrong",
+  "error": {
+    "title": "Something went wrong",
+    "description": "We couldn't load this data. Please try again."
+  },
   "retry": "Retry",
   "confirm_delete": "Are you sure you want to delete this?",
   "yes": "Yes",

@@ -828,3 +828,57 @@ export interface DisposalCandidates {
   expired: DisposalCandidateAdjustment[];
   nearExpiry: DisposalCandidateNearExpiry[];
 }
+export interface Destination {
+  id: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface DisposalSaleRequestItem {
+  id: string;
+  variantId: string;
+  batchId: string;
+  quantity: number;
+  price: number;
+  variant: { id: string; variantName: string; sku: string };
+  batch: BatchRef;
+}
+
+export interface DisposalSaleRequestImage {
+  id: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface DisposalSaleRequest {
+  id: string;
+  destinationId: string;
+  destination: { id: string; name: string; phone?: string; email?: string };
+  requestedById: string;
+  requestedBy: UserRef;
+  status: string;
+  approvedById?: string;
+  approvedBy?: UserRef;
+  approvedAt?: string;
+  rejectionReason?: string;
+  confirmedById?: string;
+  confirmedBy?: UserRef;
+  confirmedAt?: string;
+  notes?: string;
+  items: DisposalSaleRequestItem[];
+  images: DisposalSaleRequestImage[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface DisposalSaleRequestImageUrl {
+  id: string;
+  sortOrder: number;
+  url: string;
+  expiresAt: string;
+}

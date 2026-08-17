@@ -5,15 +5,18 @@
     "totalQty": "الكمية الإجمالية",
     "batches": "الدفعات",
     "expiresOn": "تنتهي في",
-    "expiringSoon": "تنتهي قريبًا",
+    "expiringSoon": "تنتهي قريباً",
     "expired": "منتهية",
-    "selectDepartment": "اختر قسمًا لعرض المخزون الحي.",
+    "selectDepartment": "اختر قسماً لعرض المخزون الحي.",
     "noAccess": "أنت غير معين في قسم مؤهل للمخزون الحي.",
     "belowMin": "أقل من الحد الأدنى",
     "aboveMax": "أعلى من الحد الأقصى",
     "hasExpired": "توجد دفعة منتهية",
-    "hasExpiringSoon": "تنتهي قريبًا",
-    "thresholdRange": "الحد الأدنى: {{min}} · الحد الأقصى: {{max}}"
+    "hasExpiringSoon": "تنتهي قريباً",
+    "thresholdRange": "الحد الأدنى: {{min}} · الحد الأقصى: {{max}}",
+    "updating": "جارٍ التحديث…",
+    "emptyTitle": "لا يوجد مخزون",
+    "emptyDescription": "لا يوجد مخزون مسجل لهذا القسم بعد."
   },
   "adjustments": {
     "title": "تسويات المخزون",
@@ -36,7 +39,9 @@
     "selectMaterial": "اختر المادة...",
     "selectDepartment": "اختر القسم...",
     "selectBatch": "اختر الدفعة...",
-    "selectType": "اختر النوع..."
+    "selectType": "اختر النوع...",
+    "loadingBatches": "جارٍ تحميل الدفعات…",
+    "noBatchesAvailable": "لا توجد دفعات متاحة."
   },
   "consumption": {
     "title": "تسجيل الاستهلاك",
@@ -49,9 +54,9 @@
     "qty": "الكمية",
     "result": "تم تسجيل الاستهلاك",
     "fefoResult": "نتيجة التخصيص FEFO",
-    "fefoDescription": "تم خصم المخزون من هذه الدفعات (الأقرب انتهاءً أولًا):",
+    "fefoDescription": "تم خصم المخزون من هذه الدفعات (الأقرب انتهاءً أولاً):",
     "recordAnother": "تسجيل آخر",
-    "selectDepartment": "اختر قسمًا",
+    "selectDepartment": "اختر قسماً",
     "allItemsRequired": "يجب أن تحتوي جميع العناصر على مادة وكمية",
     "errorRecording": "خطأ في تسجيل الاستهلاك"
   },
@@ -82,7 +87,7 @@
     "counted": "المعدود",
     "countedItems": "العناصر المعدودة",
     "noItems": "لا توجد عناصر بعد. أضف عناصر أدناه.",
-    "itemsCounted": "{{count}} عنصر تم جرده",
+    "itemsCounted": "{{count}} عنصر تمجرده",
     "material": "المادة",
     "batch": "الدفعة",
     "countedQuantity": "الكمية المعدودة",
@@ -93,10 +98,13 @@
     "departmentRequired": "القسم مطلوب",
     "allFieldsRequired": "جميع الحقول مطلوبة",
     "sessionNotFound": "الجلسة غير موجودة.",
+    "sessionNotFoundDescription": "ربما تمت إزالة جلسة الجرد هذه أو ليس لديك صلاحية الوصول إليها.",
     "selectDepartment": "اختر القسم...",
     "selectMaterial": "اختر المادة...",
     "selectBatch": "اختر الدفعة...",
-    "createSession": "إنشاء جلسة"
+    "createSession": "إنشاء جلسة",
+    "loadingBatches": "جارٍ تحميل الدفعات…",
+    "noBatchesAvailable": "لا توجد دفعات متاحة."
   },
   "batches": {
     "title": "الدفعات",

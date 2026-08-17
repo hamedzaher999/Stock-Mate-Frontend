@@ -28,6 +28,15 @@ const DashboardPage = lazy(() => import("@/features/dashboard/DashboardPage"));
 const PatientsPage = lazy(
   () => import("@/features/patients/pages/PatientsPage"),
 );
+const DestinationsPage = lazy(
+  () => import("@/features/destinations/pages/DestinationsPage"),
+);
+const DisposalSalesPage = lazy(
+  () => import("@/features/disposal-sales/pages/DisposalSalesPage"),
+);
+const DisposalSaleDetailPage = lazy(
+  () => import("@/features/disposal-sales/pages/DisposalSaleDetailPage"),
+);
 const DisposalCandidatesPage = lazy(
   () => import("@/features/disposal/pages/DisposalCandidatesPage"),
 );
@@ -338,6 +347,25 @@ export const router = createBrowserRouter([
               {
                 path: "/disposal/candidates",
                 element: wrap(DisposalCandidatesPage),
+              },
+            ],
+          },
+          //
+          {
+            element: (
+              <PermissionRoute permission={PERMISSIONS.MANAGE_DESTINATIONS} />
+            ),
+            children: [
+              { path: "/destinations", element: wrap(DestinationsPage) },
+            ],
+          },
+          {
+            element: <PermissionRoute permission={PERMISSIONS.VIEW_DISPOSAL} />,
+            children: [
+              { path: "/disposal/sales", element: wrap(DisposalSalesPage) },
+              {
+                path: "/disposal/sales/:id",
+                element: wrap(DisposalSaleDetailPage),
               },
             ],
           },

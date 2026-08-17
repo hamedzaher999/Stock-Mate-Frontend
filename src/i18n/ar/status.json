@@ -7,7 +7,12 @@
     "manager_rejected": "مرفوض من المدير",
     "preparing": "قيد التحضير",
     "complete": "مكتمل",
-    "partially_complete": "مكتمل جزئيًا",
+    "partially_complete": "مكتمل جزئياً",
+    "cancelled": "ملغى"
+  },
+  "disposalTransfer": {
+    "initiated": "تم البدء",
+    "confirmed": "مؤكد",
     "cancelled": "ملغى"
   },
   "refillRequest": {
@@ -18,7 +23,7 @@
     "manager_rejected": "مرفوض من المدير",
     "preparing": "قيد التحضير",
     "complete": "مكتمل",
-    "partially_complete": "مكتمل جزئيًا",
+    "partially_complete": "مكتمل جزئياً",
     "cancelled": "ملغى"
   },
   "purchaseReceipt": {
@@ -41,7 +46,7 @@
   },
   "prescriptionCycle": {
     "ready": "جاهز",
-    "partially_delivered": "تم التسليم جزئيًا",
+    "partially_delivered": "تم التسليم جزئياً",
     "delivered": "تم التسليم",
     "missed": "فائت",
     "cancelled": "ملغى"

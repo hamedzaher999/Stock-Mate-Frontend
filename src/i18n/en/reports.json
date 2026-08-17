@@ -3,13 +3,12 @@
   "trend": "Trend",
   "byDepartment": "By Department",
   "noData": "No data for the selected filters.",
-
+  "updating": "Updating…",
   "tabs": {
     "movement": "Inventory Movement",
     "adjustments": "Adjustments",
     "visits": "Patient Visits"
   },
-
   "filters": {
     "from": "From",
     "to": "To",
@@ -23,7 +22,6 @@
     "allStatuses": "All statuses",
     "all": "All"
   },
-
   "columns": {
     "date": "Date",
     "type": "Type",
@@ -39,7 +37,6 @@
     "status": "Status",
     "count": "Count"
   },
-
   "movement": {
     "title": "Inventory Movement Report",
     "subtitle": "Stock transactions across departments over time",
@@ -48,7 +45,6 @@
     "quantityOut": "Quantity Out",
     "netQuantity": "Net Quantity"
   },
-
   "adjustments": {
     "title": "Adjustments Report",
     "subtitle": "Damaged, expired, shrinkage, and found stock adjustments",
@@ -57,7 +53,6 @@
     "increased": "Increased",
     "decreased": "Decreased"
   },
-
   "visits": {
     "title": "Patient Visits Report",
     "subtitle": "Medical visit activity across departments",

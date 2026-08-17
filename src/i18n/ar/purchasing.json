@@ -38,7 +38,8 @@
     "reject": "رفض",
     "qtyMax": "الكمية (الحد الأقصى {{max}})",
     "selectVariant": "اختر المادة...",
-    "created": "تم الإنشاء {{date}}"
+    "created": "تم الإنشاء {{date}}",
+    "notFoundDescription": "ربما تمت إزالة طلب الشراء هذا أو ليس لديك صلاحية الوصول إليه."
   },
   "receipts": {
     "title": "إيصالات الشراء",
@@ -63,18 +64,19 @@
     "photoRequired": "صورة الإيصال مطلوبة",
     "searchPlaceholder": "ابحث في الإيصالات...",
     "receivedBy": "استلم بواسطة",
+    "notFoundDescription": "ربما تمت إزالة إيصال الشراء هذا أو ليس لديك صلاحية الوصول إليه.",
     "form": {
       "title": "تسجيل إيصال شراء",
       "subtitle": "تسجيل البضائع المستلمة مقابل طلب شراء معتمد",
       "details": "تفاصيل الإيصال",
       "purchaseRequest": "طلب الشراء",
       "selectPurchaseRequest": "اختر طلب الشراء...",
-      "noEligibleRequests": "لا توجد طلبات شراء مفتوحة للاستلام حاليًا.",
+      "noEligibleRequests": "لا توجد طلبات شراء مفتوحة للاستلام حالياً.",
       "supplier": "المورد",
       "selectSupplier": "اختر المورد...",
       "receivingDate": "تاريخ الاستلام",
       "batchType": "نوع الدفعة",
-      "finalBatchHint": "ضع علامة دفعة نهائية إذا كان هذا يكمل الطلب حتى مع وجود نقص متبقٍ.",
+      "finalBatchHint": "ضع علامة دفعة نهائية إذا كان هذا يكمل الطلب حتى مع وجود نقص متبقي.",
       "receiptImage": "صورة الإيصال",
       "chooseImage": "اختر صورة (JPEG أو PNG أو WEBP)...",
       "receiptImages": "صور الإيصال",
@@ -94,10 +96,12 @@
       "addItem": "إضافة عنصر",
       "submit": "إرسال الإيصال",
       "requiredFields": "طلب الشراء والمورد وتاريخ الاستلام مطلوبة.",
-      "atLeastOneItem": "أضف عنصرًا واحدًا على الأقل.",
+      "atLeastOneItem": "أضف عنصراً واحداً على الأقل.",
       "itemFieldsRequired": "كل عنصر يحتاج إلى مادة وكمية ورقم دفعة.",
       "imageRequired": "صورة الإيصال مطلوبة.",
-      "errorCreating": "خطأ في إنشاء الإيصال."
+      "errorCreating": "خطأ في إنشاء الإيصال.",
+      "loadingRequests": "جارٍ التحميل…",
+      "loadingSuppliers": "جارٍ التحميل…"
     },
     "detail": {
       "title": "إيصال {{id}}",

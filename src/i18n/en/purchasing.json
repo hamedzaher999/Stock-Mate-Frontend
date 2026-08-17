@@ -38,7 +38,8 @@
     "reject": "Reject",
     "qtyMax": "Qty (max {{max}})",
     "selectVariant": "Select variant...",
-    "created": "Created {{date}}"
+    "created": "Created {{date}}",
+    "notFoundDescription": "This purchase request may have been removed or you don't have access to it."
   },
   "receipts": {
     "title": "Purchase Receipts",
@@ -63,6 +64,7 @@
     "photoRequired": "Receipt photo is required",
     "searchPlaceholder": "Search receipts...",
     "receivedBy": "Received By",
+    "notFoundDescription": "This purchase receipt may have been removed or you don't have access to it.",
     "form": {
       "title": "Record Purchase Receipt",
       "subtitle": "Log goods received against an approved purchase request",
@@ -97,7 +99,9 @@
       "atLeastOneItem": "Add at least one item.",
       "itemFieldsRequired": "Each item needs a material, quantity, and batch number.",
       "imageRequired": "A receipt image is required.",
-      "errorCreating": "Error creating the receipt."
+      "errorCreating": "Error creating the receipt.",
+      "loadingRequests": "Loading…",
+      "loadingSuppliers": "Loading…"
     },
     "detail": {
       "title": "Receipt {{id}}",

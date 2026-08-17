@@ -71,3 +71,9 @@ export type NotificationCategory =
 export type DeliveryType = "batch" | "final_batch";
 export type DisposalTransferStatus = "initiated" | "confirmed" | "cancelled";
 export type DisposalItemSource = "adjustment" | "near_expiry";
+export type DisposalSaleRequestStatus =
+  | "pending_approval"
+  | "awaiting_confirmation"
+  | "rejected"
+  | "completed"
+  | "cancelled";

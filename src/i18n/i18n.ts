@@ -1,7 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-
 import enCommon from "./en/common.json";
 import enAuth from "./en/auth.json";
 import enNav from "./en/nav.json";
@@ -25,7 +24,7 @@ import enDashboard from "./en/dashboard.json";
 import enSessions from "./en/sessions.json";
 import enReports from "./en/reports.json";
 import enDisposal from "./en/disposal.json";
-
+import enAssistant from "./en/assistant.json";
 import arCommon from "./ar/common.json";
 import arAuth from "./ar/auth.json";
 import arNav from "./ar/nav.json";
@@ -48,6 +47,8 @@ import arStatus from "./ar/status.json";
 import arDashboard from "./ar/dashboard.json";
 import arSessions from "./ar/sessions.json";
 import arReports from "./ar/reports.json";
+import arDisposal from "./ar/disposal.json";
+import arAssistant from "./ar/assistant.json";
 
 const applyHtmlLang = (lng?: string) => {
   const language = lng ?? "en";
@@ -85,6 +86,7 @@ i18n
           rbac: enRbac,
           status: enStatus,
           dashboard: enDashboard,
+          assistant: enAssistant,
         },
         ar: {
           common: arCommon,
@@ -109,6 +111,8 @@ i18n
           dashboard: arDashboard,
           sessions: arSessions,
           reports: arReports,
+          disposal: arDisposal,
+          assistant: arAssistant,
         },
       },
       defaultNS: "common",
