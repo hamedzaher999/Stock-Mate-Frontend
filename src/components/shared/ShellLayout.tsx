@@ -17,8 +17,17 @@ export default function ShellLayout() {
     let unsubscribe: (() => void) | undefined;
     onForegroundMessage((payload) => {
       dispatch(baseApi.util.invalidateTags(["Notification", "UnreadCount"]));
-      if (payload.title) {
-        console.info("[push]", payload.title, payload.body);
+
+      if (payload.title && Notification.permission === "granted") {
+        const notification = new Notification(payload.title, {
+          body: payload.body,
+          icon: "/icon-192.png", // adjust to whatever icon asset you have in /public
+          data: payload.data,
+        });
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
       }
     }).then((unsub) => {
       unsubscribe = unsub;
