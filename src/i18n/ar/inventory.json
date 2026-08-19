@@ -41,7 +41,10 @@
     "selectBatch": "اختر الدفعة...",
     "selectType": "اختر النوع...",
     "loadingBatches": "جارٍ تحميل الدفعات…",
-    "noBatchesAvailable": "لا توجد دفعات متاحة."
+    "noBatchesAvailable": "لا توجد دفعات متاحة.",
+    "selectDepartmentFirst": "اختر القسم أولاً",
+    "noConfiguredMaterials": "لا توجد مواد مُهيأة لهذا القسم.",
+    "noAccess": "غير معيّن لقسم مؤهل للتسويات."
   },
   "consumption": {
     "title": "تسجيل الاستهلاك",
@@ -58,7 +61,11 @@
     "recordAnother": "تسجيل آخر",
     "selectDepartment": "اختر قسماً",
     "allItemsRequired": "يجب أن تحتوي جميع العناصر على مادة وكمية",
-    "errorRecording": "خطأ في تسجيل الاستهلاك"
+    "errorRecording": "خطأ في تسجيل الاستهلاك",
+    "selectMaterial": "اختر...",
+    "selectDepartmentFirst": "اختر القسم أولاً",
+    "noConfiguredMaterials": "لا توجد مواد مُهيأة لهذا القسم.",
+    "noAccess": "غير معيّن لقسم مؤهل لهذه الصفحة."
   },
   "transactions": {
     "title": "سجل الحركات",

@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { PlusCircle, Trash2 } from "lucide-react";
-import { useRecordConsumptionMutation } from "@/api/inventory.api";
-import { useGetVariantsQuery } from "@/api/catalog.api";
-import { useGetDepartmentsQuery } from "@/api/departments.api";
+import { useEffect, useState } from "react";
+import { Loader2, PlusCircle, Trash2 } from "lucide-react";
+import {
+  useGetStockSettingsQuery,
+  useRecordConsumptionMutation,
+} from "@/api/inventory.api";
 import { Button } from "@/components/primitive/button";
 import { Input } from "@/components/primitive/input";
 import { Label } from "@/components/primitive/label";
@@ -22,6 +23,11 @@ import {
 } from "@/components/primitive/card";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import { useTranslation } from "react-i18next";
+import DepartmentSelector, {
+  AppEmptyState,
+  useDepartmentSelector,
+} from "@/components/shared/DepartmentSelector";
+import { Skeleton } from "@/components/primitive/skeleton";
 interface Item {
   variantId: string;
   quantity: number;
@@ -39,16 +45,40 @@ export default function ConsumptionPage() {
   }> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: deptData } = useGetDepartmentsQuery();
-  const { data: variantData } = useGetVariantsQuery({
-    isActive: true,
-    limit: 100,
-  } as { isActive: boolean; limit: number });
+  const {
+    resolved,
+    noAccess,
+    isLoading: deptLoading,
+  } = useDepartmentSelector("stock");
+
+  useEffect(() => {
+    if (resolved && !deptId) {
+      setDeptId(resolved.id);
+    }
+  }, [resolved, deptId]);
+
+  // Reset selected items whenever the department changes, since the
+  // allowed materials are department-scoped via stock settings.
+  useEffect(() => {
+    setItems([{ variantId: "", quantity: 1 }]);
+  }, [deptId]);
+
+  const { data: stockSettingsData, isFetching: stockSettingsFetching } =
+    useGetStockSettingsQuery(
+      {
+        departmentId: deptId,
+        isActive: true,
+        limit: 100,
+      } as { departmentId: string; isActive: boolean; limit: number },
+      { skip: !deptId },
+    );
   const [recordConsumption, { isLoading }] = useRecordConsumptionMutation();
 
-  const variants = (variantData?.data?.items ?? []).filter(
-    (v) => v.product?.materialType !== "fixed_asset",
-  );
+  // Only materials configured (via Stock Settings) for this department,
+  // excluding fixed assets which can't be "consumed".
+  const variants = (stockSettingsData?.data?.items ?? [])
+    .map((s) => s.variant)
+    .filter((v): v is { id: string; variantName: string; sku: string } => !!v);
 
   function addItem() {
     setItems((p) => [...p, { variantId: "", quantity: 1 }]);
@@ -88,6 +118,30 @@ export default function ConsumptionPage() {
           t("consumption.errorRecording"),
       );
     }
+  }
+
+  if (deptLoading) {
+    return (
+      <div>
+        <AppPageHeader title={t("consumption.title")} />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
+
+  if (noAccess) {
+    return (
+      <div>
+        <AppPageHeader title={t("consumption.title")} />
+        <AppEmptyState
+          title={t("common:forbidden")}
+          description={t("consumption.noAccess", {
+            defaultValue:
+              "Not assigned to an eligible department for this page.",
+          })}
+        />
+      </div>
+    );
   }
 
   if (result) {
@@ -132,22 +186,20 @@ export default function ConsumptionPage() {
       <div className="max-w-xl space-y-4">
         <div className="space-y-1.5">
           <Label required>{t("consumption.department")}</Label>
-          <Select value={deptId} onValueChange={setDeptId}>
-            <SelectTrigger>
-              <SelectValue placeholder={t("consumption.selectDepartment")} />
-            </SelectTrigger>
-            <SelectContent>
-              {(deptData?.data?.items ?? []).map((d) => (
-                <SelectItem key={d.id} value={d.id}>
-                  {d.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <DepartmentSelector
+            context="stock"
+            value={deptId}
+            onChange={(id) => setDeptId(id)}
+          />
         </div>
 
         <div className="space-y-3">
-          <Label>{t("consumption.items")}</Label>
+          <div className="flex items-center gap-1.5">
+            <Label>{t("consumption.items")}</Label>
+            {stockSettingsFetching && (
+              <Loader2 className="size-3 animate-spin text-muted-foreground" />
+            )}
+          </div>
           {items.map((item, i) => (
             <div key={i} className="flex items-end gap-2">
               <div className="flex-1 space-y-1.5">
@@ -155,11 +207,30 @@ export default function ConsumptionPage() {
                 <Select
                   value={item.variantId}
                   onValueChange={(v) => updateItem(i, "variantId", v)}
+                  disabled={!deptId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select..." />
+                    <SelectValue
+                      placeholder={
+                        deptId
+                          ? t("consumption.selectMaterial", {
+                              defaultValue: "Select...",
+                            })
+                          : t("consumption.selectDepartmentFirst", {
+                              defaultValue: "Select a department first",
+                            })
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
+                    {variants.length === 0 && deptId && (
+                      <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                        {t("consumption.noConfiguredMaterials", {
+                          defaultValue:
+                            "No materials are configured for this department.",
+                        })}
+                      </div>
+                    )}
                     {variants.map((v) => (
                       <SelectItem key={v.id} value={v.id}>
                         {v.variantName}
@@ -191,7 +262,12 @@ export default function ConsumptionPage() {
               )}
             </div>
           ))}
-          <Button variant="outline" size="sm" onClick={addItem}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={addItem}
+            disabled={!deptId}
+          >
             <PlusCircle className="size-4" /> {t("consumption.addItem")}
           </Button>
         </div>
@@ -206,7 +282,12 @@ export default function ConsumptionPage() {
         </div>
 
         {error && <p className="text-xs text-danger">{error}</p>}
-        <Button onClick={handleSubmit} loading={isLoading} className="w-full">
+        <Button
+          onClick={handleSubmit}
+          loading={isLoading}
+          disabled={!deptId}
+          className="w-full"
+        >
           {t("consumption.record")}
         </Button>
       </div>

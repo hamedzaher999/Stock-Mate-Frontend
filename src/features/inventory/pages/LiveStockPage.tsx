@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useGetLiveStockQuery } from "@/api/inventory.api";

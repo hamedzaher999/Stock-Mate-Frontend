@@ -23,7 +23,6 @@ import {
   CalendarClock,
   Activity,
   BarChart4,
-  Sparkles,
   Trash2,
   Search,
   DollarSign,
@@ -56,7 +55,6 @@ export const NAV_SECTIONS: NavSection[] = [
       },
       { labelKey: "nav:notifications", path: "/notifications", icon: Bell },
       { labelKey: "nav:profile", path: "/profile", icon: User },
-      { labelKey: "nav:assistant", path: "/assistant", icon: Sparkles },
     ],
   },
   {

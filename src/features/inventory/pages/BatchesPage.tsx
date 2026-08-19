@@ -20,15 +20,17 @@ import {
 import type { Batch } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
 import AppErrorState from "@/components/shared/AppErrorState";
+import { getErrorStatus } from "@/lib/getErrorStatus";
 export default function BatchesPage() {
   const [page, setPage] = useState(1);
   const [deptId, setDeptId] = useState("");
   const { data: deptData } = useGetDepartmentsQuery();
-  const { data, isLoading, isFetching, isError, refetch } = useGetBatchesQuery({
-    page,
-    limit: 20,
-    ...(deptId ? { departmentId: deptId } : {}),
-  });
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useGetBatchesQuery({
+      page,
+      limit: 20,
+      ...(deptId ? { departmentId: deptId } : {}),
+    });
   const { t } = useTranslation("inventory");
   const columns: ColumnDef<Batch>[] = [
     {
@@ -106,7 +108,10 @@ export default function BatchesPage() {
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         {isError && !isLoading ? (
-          <AppErrorState onRetry={() => refetch()} />
+          <AppErrorState
+            onRetry={() => refetch()}
+            status={getErrorStatus(error)}
+          />
         ) : (
           <AppDataTable
             data={data?.data}

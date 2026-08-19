@@ -82,7 +82,7 @@ export default function RefillRequestsPage() {
     {
       departmentId: deptId,
       isActive: true,
-      limit: 200,
+      limit: 100,
     } as { departmentId: string; isActive: boolean; limit: number },
     { skip: !deptId },
   );

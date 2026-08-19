@@ -133,9 +133,6 @@ const UsersPage = lazy(() => import("@/features/users/pages/UsersPage"));
 const UserDetailPage = lazy(
   () => import("@/features/users/pages/UserDetailPage"),
 );
-const AssistantPage = lazy(
-  () => import("@/features/assistant/pages/AssistantPage"),
-);
 const VisitDetailPage = lazy(
   () => import("@/features/medical-visits/pages/VisitDetailPage"),
 );
@@ -188,7 +185,6 @@ export const router = createBrowserRouter([
           { path: "/settings", element: wrap(SettingsPage) },
           { path: "/notifications", element: wrap(NotificationsPage) },
           { path: "/my-sessions", element: wrap(MySessionsPage) },
-          { path: "/assistant", element: wrap(AssistantPage) },
           // Patients
           {
             element: <PermissionRoute permission={PERMISSIONS.VIEW_PATIENTS} />,

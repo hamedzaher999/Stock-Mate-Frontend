@@ -41,7 +41,10 @@
     "selectBatch": "Select batch...",
     "selectType": "Select type...",
     "loadingBatches": "Loading batches…",
-    "noBatchesAvailable": "No batches available."
+    "noBatchesAvailable": "No batches available.",
+    "selectDepartmentFirst": "Select a department first",
+    "noConfiguredMaterials": "No materials are configured for this department.",
+    "noAccess": "Not assigned to an eligible department for adjustments."
   },
   "consumption": {
     "title": "Record Consumption",
@@ -58,7 +61,11 @@
     "recordAnother": "Record Another",
     "selectDepartment": "Select a department",
     "allItemsRequired": "All items must have a material and quantity",
-    "errorRecording": "Error recording consumption"
+    "errorRecording": "Error recording consumption",
+    "selectMaterial": "Select...",
+    "selectDepartmentFirst": "Select a department first",
+    "noConfiguredMaterials": "No materials are configured for this department.",
+    "noAccess": "Not assigned to an eligible department for this page."
   },
   "transactions": {
     "title": "Inventory Transactions",
