@@ -1,3 +1,4 @@
+import ConfirmActionDialog from "@/components/shared/ConfirmActionDialog";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -59,7 +60,8 @@ export default function DisposalSaleDetailPage() {
 
   const [approve, { isLoading: approving }] =
     useApproveDisposalSaleRequestMutation();
-  const [reject] = useRejectDisposalSaleRequestMutation();
+  const [reject, { isLoading: rejecting }] =
+    useRejectDisposalSaleRequestMutation();
   const [cancel] = useCancelDisposalSaleRequestMutation();
   const [addImages, { isLoading: uploadingImages }] =
     useAddDisposalSaleImagesMutation();
@@ -68,7 +70,7 @@ export default function DisposalSaleDetailPage() {
 
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-
+  const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -427,11 +429,7 @@ export default function DisposalSaleDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={async () => {
-                await reject({ id: request.id, reason: rejectReason });
-                setRejectOpen(false);
-                setRejectReason("");
-              }}
+              onClick={() => setRejectConfirmOpen(true)}
               disabled={!rejectReason}
             >
               {t("sales.reject")}
@@ -440,6 +438,28 @@ export default function DisposalSaleDetailPage() {
         </DialogContent>
       </Dialog>
 
+      <ConfirmActionDialog
+        open={rejectConfirmOpen}
+        onOpenChange={(v) => !rejecting && setRejectConfirmOpen(v)}
+        title={t("sales.rejectTitle")}
+        description={t("common:confirmReject.description", {
+          defaultValue:
+            "This will reject the request and notify the requester. This action cannot be undone.",
+        })}
+        confirmLabel={t("sales.reject")}
+        loading={rejecting}
+        onConfirm={async () => {
+          if (rejecting) return;
+          try {
+            await reject({ id: request.id, reason: rejectReason }).unwrap();
+            setRejectConfirmOpen(false);
+            setRejectOpen(false);
+            setRejectReason("");
+          } catch {
+            // keep dialog open on failure so the user can retry
+          }
+        }}
+      />
       {/* Upload Images Dialog */}
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
         <DialogContent className="max-w-lg">

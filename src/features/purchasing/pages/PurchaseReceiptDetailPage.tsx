@@ -1,3 +1,7 @@
+import QuantityMismatchDialog, {
+  getQuantityMismatches,
+  MismatchDiff,
+} from "@/components/shared/QuantityMismatchDialog";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -69,6 +73,10 @@ export default function PurchaseReceiptDetailPage() {
     Record<string, number>
   >({});
   const [confirmNotes, setConfirmNotes] = useState("");
+  const [mismatchOpen, setMismatchOpen] = useState(false);
+  const [pendingMismatches, setPendingMismatches] = useState<MismatchDiff[]>(
+    [],
+  );
   const [error, setError] = useState<string | null>(null);
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -122,7 +130,7 @@ export default function PurchaseReceiptDetailPage() {
     setConfirmOpen(true);
   }
 
-  async function handleConfirm() {
+  async function submitConfirm() {
     setError(null);
     try {
       await confirmReceipt({
@@ -135,11 +143,29 @@ export default function PurchaseReceiptDetailPage() {
         })),
       }).unwrap();
       setConfirmOpen(false);
+      setMismatchOpen(false);
     } catch (e: unknown) {
       setError(
         (e as { data?: { message?: string } })?.data?.message ?? "Error",
       );
     }
+  }
+
+  function handleConfirm() {
+    setError(null);
+    const mismatches = getQuantityMismatches(
+      receipt!.items.map((item) => ({
+        name: item.variant?.variantName ?? item.variantId,
+        expected: Number(item.quantity),
+        entered: confirmedQuantities[item.id] ?? Number(item.quantity),
+      })),
+    );
+    if (mismatches.length > 0) {
+      setPendingMismatches(mismatches);
+      setMismatchOpen(true);
+      return;
+    }
+    submitConfirm();
   }
 
   async function handleCancel() {
@@ -449,7 +475,15 @@ export default function PurchaseReceiptDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <QuantityMismatchDialog
+        open={mismatchOpen}
+        onOpenChange={setMismatchOpen}
+        mismatches={pendingMismatches}
+        loading={confirming}
+        onConfirm={submitConfirm}
+      />
 
+      {/* Manage images dialog (add/remove) */}
       {/* Manage images dialog (add/remove) */}
       <Dialog open={manageOpen} onOpenChange={setManageOpen}>
         <DialogContent className="max-w-lg">

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Clock, CheckCircle2, Loader2 } from "lucide-react";
+import { UserPlus, Clock, CheckCircle2, Loader2, Trash2 } from "lucide-react";
 import {
   useGetQueueQuery,
   useAddToQueueMutation,
   useReleaseQueueEntryMutation,
   useRemoveFromQueueMutation,
+  useRemoveAllFromQueueMutation,
 } from "@/api/queue.api";
 import { useSelectPatientMutation } from "@/api/visits.api";
 import { usePermission, useCurrentUser } from "@/hooks/usePermission";
@@ -39,6 +40,13 @@ import type { Patient, QueueEntry } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
 import PatientQuickFindPanel from "@/components/shared/PatientQuickFindPanel";
 import AppErrorState from "@/components/shared/AppErrorState";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/primitive/select";
 export default function QueuePage() {
   const { t } = useTranslation("queue");
   const navigate = useNavigate();
@@ -101,7 +109,13 @@ export default function QueuePage() {
 
   const [removeTarget, setRemoveTarget] = useState<QueueEntry | null>(null);
   const [removeReason, setRemoveReason] = useState("");
-
+  const [removeAllOpen, setRemoveAllOpen] = useState(false);
+  const [removeAllScope, setRemoveAllScope] = useState<"current" | "all">(
+    "current",
+  );
+  const [removeAllReason, setRemoveAllReason] = useState("");
+  const [removeAllFromQueue, { isLoading: removingAll }] =
+    useRemoveAllFromQueueMutation();
   const liveEntries = liveData?.data?.items ?? [];
   const historyEntries = historyData?.data?.items ?? [];
 
@@ -172,7 +186,16 @@ export default function QueuePage() {
     setRemoveTarget(null);
     setRemoveReason("");
   }
-
+  async function handleRemoveAll() {
+    if (removeAllReason.length < 3) return;
+    await removeAllFromQueue({
+      departmentId: removeAllScope === "current" ? deptId : undefined,
+      removedReason: removeAllReason,
+    }).unwrap();
+    setRemoveAllOpen(false);
+    setRemoveAllReason("");
+    setRemoveAllScope("current");
+  }
   function EntryRow({ entry }: { entry: QueueEntry }) {
     const canRelease =
       entry.status === "in_consultation" &&
@@ -332,6 +355,20 @@ export default function QueuePage() {
                 setDeptName(name);
               }}
             />
+            {canManage && (
+              <Button
+                variant="outline"
+                className="text-danger border-danger/30 hover:bg-danger/5"
+                onClick={() => {
+                  setRemoveAllScope("current");
+                  setRemoveAllReason("");
+                  setRemoveAllOpen(true);
+                }}
+              >
+                <Trash2 className="size-4" />
+                {t("removeAll")}
+              </Button>
+            )}
             {canManage && (
               <Button onClick={openAddDialog}>
                 <UserPlus className="size-4" />
@@ -522,6 +559,64 @@ export default function QueuePage() {
               disabled={removeReason.length < 3}
             >
               {t("remove")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Remove All Dialog */}
+      <Dialog open={removeAllOpen} onOpenChange={setRemoveAllOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("removeAllTitle")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label required>{t("removeAllScope")}</Label>
+              <Select
+                value={removeAllScope}
+                onValueChange={(v) => setRemoveAllScope(v as "current" | "all")}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current" disabled={!deptId}>
+                    {t("removeAllScopeCurrent", { name: deptName || "—" })}
+                  </SelectItem>
+                  <SelectItem value="all">{t("removeAllScopeAll")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label required>{t("removeReason")}</Label>
+              <Textarea
+                value={removeAllReason}
+                onChange={(e) => setRemoveAllReason(e.target.value)}
+                placeholder={t("removeReasonPlaceholder")}
+                rows={3}
+              />
+              {removeAllReason.length > 0 && removeAllReason.length < 3 && (
+                <p className="text-xs text-danger">{t("removeReasonMin")}</p>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground bg-warning/10 rounded-xl px-3 py-2">
+              {t("removeAllWarning", {
+                defaultValue:
+                  "This will remove every waiting or in-consultation patient from the selected scope. This action cannot be undone.",
+              })}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRemoveAllOpen(false)}>
+              {t("common:actions.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRemoveAll}
+              loading={removingAll}
+              disabled={removeAllReason.length < 3}
+            >
+              {t("removeAll")}
             </Button>
           </DialogFooter>
         </DialogContent>

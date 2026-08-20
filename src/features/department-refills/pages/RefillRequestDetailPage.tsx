@@ -40,6 +40,7 @@ import { formatDate, formatDateTime } from "@/lib/formatters";
 import { useTranslation } from "react-i18next";
 import { useGetBatchesQuery } from "@/api/inventory.api";
 import { useGetDepartmentsQuery } from "@/api/departments.api";
+import ConfirmActionDialog from "@/components/shared/ConfirmActionDialog";
 const STEPS = [
   "draft",
   "pending_hospital_approval",
@@ -77,10 +78,12 @@ export default function RefillRequestDetailPage() {
   const [submit, { isLoading: submitting }] = useSubmitRefillRequestMutation();
   const [hospitalApprove, { isLoading: hospitalApproving }] =
     useHospitalApproveRefillMutation();
-  const [hospitalReject] = useHospitalRejectRefillMutation();
+  const [hospitalReject, { isLoading: hospitalRejecting }] =
+    useHospitalRejectRefillMutation();
   const [managerApprove, { isLoading: managerApproving }] =
     useManagerApproveRefillMutation();
-  const [managerReject] = useManagerRejectRefillMutation();
+  const [managerReject, { isLoading: managerRejecting }] =
+    useManagerRejectRefillMutation();
   const [complete] = useCompleteRefillRequestMutation();
   const [cancel] = useCancelRefillRequestMutation();
 
@@ -97,7 +100,10 @@ export default function RefillRequestDetailPage() {
 
   const [managerRejectOpen, setManagerRejectOpen] = useState(false);
   const [managerRejectReason, setManagerRejectReason] = useState("");
-
+  const [hospitalRejectConfirmOpen, setHospitalRejectConfirmOpen] =
+    useState(false);
+  const [managerRejectConfirmOpen, setManagerRejectConfirmOpen] =
+    useState(false);
   // ── Ship Delivery ──────────────────────────────────────────
   const [shipOpen, setShipOpen] = useState(false);
   const [deliveryType, setDeliveryType] = useState<"batch" | "final_batch">(
@@ -606,14 +612,7 @@ export default function RefillRequestDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={async () => {
-                await hospitalReject({
-                  id: req.id,
-                  reason: hospitalRejectReason,
-                });
-                setHospitalRejectOpen(false);
-                setHospitalRejectReason("");
-              }}
+              onClick={() => setHospitalRejectConfirmOpen(true)}
               disabled={!hospitalRejectReason}
             >
               {t("requests.rejectBtn")}
@@ -621,6 +620,32 @@ export default function RefillRequestDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmActionDialog
+        open={hospitalRejectConfirmOpen}
+        onOpenChange={(v) =>
+          !hospitalRejecting && setHospitalRejectConfirmOpen(v)
+        }
+        title={t("requests.hospitalRejectTitle")}
+        description={t("common:confirmReject.description", {
+          defaultValue:
+            "This will reject the request and notify the requester. This action cannot be undone.",
+        })}
+        confirmLabel={t("requests.rejectBtn")}
+        loading={hospitalRejecting}
+        onConfirm={async () => {
+          if (hospitalRejecting) return;
+          try {
+            await hospitalReject({
+              id: req.id,
+              reason: hospitalRejectReason,
+            }).unwrap();
+            setHospitalRejectConfirmOpen(false);
+            setHospitalRejectOpen(false);
+            setHospitalRejectReason("");
+          } catch {}
+        }}
+      />
 
       {/* Manager Approve Dialog */}
       <Dialog open={managerApproveOpen} onOpenChange={setManagerApproveOpen}>
@@ -719,14 +744,7 @@ export default function RefillRequestDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={async () => {
-                await managerReject({
-                  id: req.id,
-                  reason: managerRejectReason,
-                });
-                setManagerRejectOpen(false);
-                setManagerRejectReason("");
-              }}
+              onClick={() => setManagerRejectConfirmOpen(true)}
               disabled={!managerRejectReason}
             >
               Reject
@@ -734,6 +752,32 @@ export default function RefillRequestDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmActionDialog
+        open={managerRejectConfirmOpen}
+        onOpenChange={(v) =>
+          !managerRejecting && setManagerRejectConfirmOpen(v)
+        }
+        title={t("requests.managerRejectTitle")}
+        description={t("common:confirmReject.description", {
+          defaultValue:
+            "This will reject the request and notify the requester. This action cannot be undone.",
+        })}
+        confirmLabel="Reject"
+        loading={managerRejecting}
+        onConfirm={async () => {
+          if (managerRejecting) return;
+          try {
+            await managerReject({
+              id: req.id,
+              reason: managerRejectReason,
+            }).unwrap();
+            setManagerRejectConfirmOpen(false);
+            setManagerRejectOpen(false);
+            setManagerRejectReason("");
+          } catch {}
+        }}
+      />
 
       {/* Ship Delivery Dialog */}
       <Dialog open={shipOpen} onOpenChange={setShipOpen}>

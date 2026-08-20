@@ -1,3 +1,7 @@
+import QuantityMismatchDialog, {
+  getQuantityMismatches,
+  MismatchDiff,
+} from "@/components/shared/QuantityMisMatchDialog";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -58,7 +62,10 @@ export default function DisposalTransferDetailPage() {
   >({});
   const [confirmNotes, setConfirmNotes] = useState("");
   const [confirmError, setConfirmError] = useState<string | null>(null);
-
+  const [mismatchOpen, setMismatchOpen] = useState(false);
+  const [pendingMismatches, setPendingMismatches] = useState<MismatchDiff[]>(
+    [],
+  );
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -102,7 +109,7 @@ export default function DisposalTransferDetailPage() {
     setConfirmOpen(true);
   }
 
-  async function handleConfirm() {
+  async function submitConfirm() {
     setConfirmError(null);
     try {
       await confirmTransfer({
@@ -115,11 +122,29 @@ export default function DisposalTransferDetailPage() {
         })),
       }).unwrap();
       setConfirmOpen(false);
+      setMismatchOpen(false);
     } catch (e: unknown) {
       setConfirmError(
         (e as { data?: { message?: string } })?.data?.message ?? "Error",
       );
     }
+  }
+
+  function handleConfirm() {
+    setConfirmError(null);
+    const mismatches = getQuantityMismatches(
+      transfer!.items.map((item) => ({
+        name: item.variant?.variantName ?? "—",
+        expected: Number(item.shippedQuantity),
+        entered: confirmedQuantities[item.id] ?? Number(item.shippedQuantity),
+      })),
+    );
+    if (mismatches.length > 0) {
+      setPendingMismatches(mismatches);
+      setMismatchOpen(true);
+      return;
+    }
+    submitConfirm();
   }
 
   async function handleCancel() {
@@ -383,7 +408,15 @@ export default function DisposalTransferDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <QuantityMismatchDialog
+        open={mismatchOpen}
+        onOpenChange={setMismatchOpen}
+        mismatches={pendingMismatches}
+        loading={confirming}
+        onConfirm={submitConfirm}
+      />
 
+      {/* Cancel dialog */}
       {/* Cancel dialog */}
       <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
         <DialogContent>

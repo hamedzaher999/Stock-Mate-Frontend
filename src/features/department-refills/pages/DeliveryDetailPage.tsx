@@ -1,3 +1,7 @@
+import QuantityMismatchDialog, {
+  getQuantityMismatches,
+  MismatchDiff,
+} from "@/components/shared/QuantityMisMatchDialog";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -61,6 +65,10 @@ export default function DeliveryDetailPage() {
   >({});
   const [confirmNotes, setConfirmNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [mismatchOpen, setMismatchOpen] = useState(false);
+  const [pendingMismatches, setPendingMismatches] = useState<MismatchDiff[]>(
+    [],
+  );
 
   if (isLoading)
     return (
@@ -102,24 +110,46 @@ export default function DeliveryDetailPage() {
     setConfirmOpen(true);
   }
 
-  async function handleConfirm() {
+  function buildConfirmItems() {
+    return delivery!.items.map((item) => ({
+      deliveryItemId: item.id,
+      receivedQuantity:
+        receivedQuantities[item.id] ?? Number(item.shippedQuantity),
+    }));
+  }
+
+  async function submitConfirm() {
     setError(null);
     try {
       await confirmDelivery({
         id: delivery!.id,
         notes: confirmNotes || undefined,
-        items: delivery!.items.map((item) => ({
-          deliveryItemId: item.id,
-          receivedQuantity:
-            receivedQuantities[item.id] ?? Number(item.shippedQuantity),
-        })),
+        items: buildConfirmItems(),
       }).unwrap();
       setConfirmOpen(false);
+      setMismatchOpen(false);
     } catch (e: unknown) {
       setError(
         (e as { data?: { message?: string } })?.data?.message ?? "Error",
       );
     }
+  }
+
+  function handleConfirm() {
+    setError(null);
+    const mismatches = getQuantityMismatches(
+      delivery!.items.map((item) => ({
+        name: item.batch?.variant?.variantName ?? "—",
+        expected: Number(item.shippedQuantity),
+        entered: receivedQuantities[item.id] ?? Number(item.shippedQuantity),
+      })),
+    );
+    if (mismatches.length > 0) {
+      setPendingMismatches(mismatches);
+      setMismatchOpen(true);
+      return;
+    }
+    submitConfirm();
   }
 
   return (
@@ -342,6 +372,13 @@ export default function DeliveryDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <QuantityMismatchDialog
+        open={mismatchOpen}
+        onOpenChange={setMismatchOpen}
+        mismatches={pendingMismatches}
+        loading={confirming}
+        onConfirm={submitConfirm}
+      />
     </div>
   );
 }

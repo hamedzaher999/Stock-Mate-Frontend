@@ -1,3 +1,4 @@
+import ConfirmActionDialog from "@/components/shared/ConfirmActionDialog";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
@@ -60,10 +61,12 @@ export default function PurchaseRequestDetailPage() {
     useSubmitPurchaseRequestMutation();
   const [hospitalApprove, { isLoading: hospitalApproving }] =
     useHospitalApprovePRMutation();
-  const [hospitalReject] = useHospitalRejectPRMutation();
+  const [hospitalReject, { isLoading: hospitalRejecting }] =
+    useHospitalRejectPRMutation();
   const [managerApprove, { isLoading: managerApproving }] =
     useManagerApprovePRMutation();
-  const [managerReject] = useManagerRejectPRMutation();
+  const [managerReject, { isLoading: managerRejecting }] =
+    useManagerRejectPRMutation();
   const [complete] = useCompletePurchaseRequestMutation();
   const [cancel] = useCancelPurchaseRequestMutation();
 
@@ -77,7 +80,10 @@ export default function PurchaseRequestDetailPage() {
 
   const [managerRejectOpen, setManagerRejectOpen] = useState(false);
   const [managerRejectReason, setManagerRejectReason] = useState("");
-
+  const [hospitalRejectConfirmOpen, setHospitalRejectConfirmOpen] =
+    useState(false);
+  const [managerRejectConfirmOpen, setManagerRejectConfirmOpen] =
+    useState(false);
   if (isLoading)
     return (
       <div className="p-6 space-y-4">
@@ -308,14 +314,7 @@ export default function PurchaseRequestDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={async () => {
-                await hospitalReject({
-                  id: req.id,
-                  reason: hospitalRejectReason,
-                });
-                setHospitalRejectOpen(false);
-                setHospitalRejectReason("");
-              }}
+              onClick={() => setHospitalRejectConfirmOpen(true)}
               disabled={!hospitalRejectReason}
             >
               {t("requests.reject")}
@@ -323,6 +322,32 @@ export default function PurchaseRequestDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmActionDialog
+        open={hospitalRejectConfirmOpen}
+        onOpenChange={(v) =>
+          !hospitalRejecting && setHospitalRejectConfirmOpen(v)
+        }
+        title={t("requests.hospitalRejectTitle")}
+        description={t("common:confirmReject.description", {
+          defaultValue:
+            "This will reject the request and notify the requester. This action cannot be undone.",
+        })}
+        confirmLabel={t("requests.reject")}
+        loading={hospitalRejecting}
+        onConfirm={async () => {
+          if (hospitalRejecting) return;
+          try {
+            await hospitalReject({
+              id: req.id,
+              reason: hospitalRejectReason,
+            }).unwrap();
+            setHospitalRejectConfirmOpen(false);
+            setHospitalRejectOpen(false);
+            setHospitalRejectReason("");
+          } catch {}
+        }}
+      />
 
       {/* Manager Approve Dialog */}
       <Dialog open={managerApproveOpen} onOpenChange={setManagerApproveOpen}>
@@ -398,14 +423,7 @@ export default function PurchaseRequestDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={async () => {
-                await managerReject({
-                  id: req.id,
-                  reason: managerRejectReason,
-                });
-                setManagerRejectOpen(false);
-                setManagerRejectReason("");
-              }}
+              onClick={() => setManagerRejectConfirmOpen(true)}
               disabled={!managerRejectReason}
             >
               Reject
@@ -413,6 +431,32 @@ export default function PurchaseRequestDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmActionDialog
+        open={managerRejectConfirmOpen}
+        onOpenChange={(v) =>
+          !managerRejecting && setManagerRejectConfirmOpen(v)
+        }
+        title={t("requests.managerRejectTitle")}
+        description={t("common:confirmReject.description", {
+          defaultValue:
+            "This will reject the request and notify the requester. This action cannot be undone.",
+        })}
+        confirmLabel="Reject"
+        loading={managerRejecting}
+        onConfirm={async () => {
+          if (managerRejecting) return;
+          try {
+            await managerReject({
+              id: req.id,
+              reason: managerRejectReason,
+            }).unwrap();
+            setManagerRejectConfirmOpen(false);
+            setManagerRejectOpen(false);
+            setManagerRejectReason("");
+          } catch {}
+        }}
+      />
     </div>
   );
 }
