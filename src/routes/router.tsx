@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, useRouteError } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import PermissionRoute from "./PermissionRoute";
 import ShellLayout from "@/components/shared/ShellLayout";
@@ -6,8 +6,9 @@ import LoginPage from "@/features/auth/pages/LoginPage";
 import { PERMISSIONS } from "@/lib/permissions";
 
 // Lazy page imports
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Skeleton } from "@/components/primitive/skeleton";
+import { Button } from "@/components/primitive/button";
 
 const Loader = () => (
   <div className="space-y-3 p-4">
@@ -152,7 +153,36 @@ const PurchaseReceiptCreatePage = lazy(
 const PurchaseReceiptDetailPage = lazy(
   () => import("@/features/purchasing/pages/PurchaseReceiptDetailPage"),
 );
+function RouteErrorBoundary() {
+  const error = useRouteError();
 
+  useEffect(() => {
+    const msg = error instanceof Error ? error.message : String(error);
+    const isChunkLoadError =
+      /Failed to fetch dynamically imported module/i.test(msg) ||
+      /error loading dynamically imported module/i.test(msg) ||
+      /Importing a module script failed/i.test(msg);
+
+    if (isChunkLoadError) {
+      const key = "chunk-reload-attempted";
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        window.location.reload();
+      }
+    }
+  }, [error]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4 p-6">
+      <p className="text-lg font-medium">Something went wrong</p>
+      <p className="text-sm text-muted-foreground max-w-md">
+        The app may have been updated. Please refresh the page. If this keeps
+        happening, contact support.
+      </p>
+      <Button onClick={() => window.location.reload()}>Reload</Button>
+    </div>
+  );
+}
 const NotFoundPage = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
     <p className="text-6xl font-bold text-muted">404</p>
@@ -177,12 +207,18 @@ const ForbiddenPage = () => (
 );
 
 export const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
+  {
+    path: "/login",
+    element: <LoginPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
   {
     element: <ProtectedRoute />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         element: <ShellLayout />,
+        errorElement: <RouteErrorBoundary />,
         children: [
           { path: "/", element: wrap(DashboardPage) },
           { path: "/profile", element: wrap(ProfilePage) },
