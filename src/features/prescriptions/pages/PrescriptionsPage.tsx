@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGetPrescriptionsQuery } from "@/api/prescriptions.api";
@@ -15,19 +15,55 @@ import {
 import { formatDate } from "@/lib/formatters";
 import type { Prescription } from "@/lib/apiTypes";
 import AppErrorState from "@/components/shared/AppErrorState";
+import DepartmentSelector, {
+  AppEmptyState,
+  useDepartmentSelector,
+} from "@/components/shared/DepartmentSelector";
+import { Skeleton } from "@/components/primitive/skeleton";
 const PRESCRIPTION_STATUSES = ["active", "completed", "cancelled"] as const;
+const CYCLE_STATUSES = [
+  "ready",
+  "partially_delivered",
+  "delivered",
+  "missed",
+  "cancelled",
+] as const;
+
 export default function PrescriptionsPage() {
   const { t } = useTranslation("prescriptions");
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
+  const [cycleStatus, setCycleStatus] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+
+  const {
+    resolved,
+    noAccess,
+    scoped,
+    departments: selectableDepartments,
+    isLoading: deptLoading,
+  } = useDepartmentSelector("batches");
+
+  useEffect(() => {
+    if (resolved && !departmentId) {
+      setDepartmentId(resolved.id);
+    }
+  }, [resolved, departmentId]);
+
+  const canFilterByDepartment = !scoped;
 
   const { data, isLoading, isFetching, isError, refetch } =
-    useGetPrescriptionsQuery({
-      page,
-      limit: 20,
-      ...(status ? { status } : {}),
-    });
+    useGetPrescriptionsQuery(
+      {
+        page,
+        limit: 20,
+        ...(status ? { status } : {}),
+        ...(cycleStatus ? { cycleStatus } : {}),
+        ...(departmentId ? { departmentId } : {}),
+      },
+      { skip: scoped && !departmentId && !noAccess },
+    );
 
   const columns: ColumnDef<Prescription>[] = [
     {
@@ -78,16 +114,45 @@ export default function PrescriptionsPage() {
     },
   ];
 
+  if (deptLoading)
+    return (
+      <div>
+        <AppPageHeader title={t("title")} />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+
+  if (noAccess) {
+    return (
+      <div>
+        <AppPageHeader title={t("title")} />
+        <AppEmptyState
+          title={t("common:forbidden")}
+          description={t("noAccess", {
+            defaultValue:
+              "Not assigned to an eligible department for this page.",
+          })}
+        />
+      </div>
+    );
+  }
+
   return (
     <div>
       <AppPageHeader title={t("title")} />
-      <div className="flex gap-3 mb-4">
-        <Select value={status} onValueChange={setStatus}>
+      <div className="flex gap-3 mb-4 flex-wrap">
+        <Select
+          value={status || "__all__"}
+          onValueChange={(v) => {
+            setStatus(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-40">
             <SelectValue placeholder={t("common:filters.allStatuses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">{t("common:filters.all")}</SelectItem>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
             {PRESCRIPTION_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
                 {t(`status:prescription.${s}`, { defaultValue: s })}
@@ -95,6 +160,61 @@ export default function PrescriptionsPage() {
             ))}
           </SelectContent>
         </Select>
+        <Select
+          value={cycleStatus || "__all__"}
+          onValueChange={(v) => {
+            setCycleStatus(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-52">
+            <SelectValue
+              placeholder={t("common:filters.allCycleStatuses", {
+                defaultValue: "All cycle statuses",
+              })}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+            {CYCLE_STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {t(`status:prescriptionCycle.${s}`, {
+                  defaultValue: s.replace(/_/g, " "),
+                })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {canFilterByDepartment ? (
+          <Select
+            value={departmentId || "__all__"}
+            onValueChange={(v) => {
+              setDepartmentId(v === "__all__" ? "" : v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder={t("common:filters.allDepartments")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+              {selectableDepartments.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <DepartmentSelector
+            context="batches"
+            value={departmentId}
+            onChange={(id) => {
+              setDepartmentId(id);
+              setPage(1);
+            }}
+          />
+        )}
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         {isError && !isLoading ? (

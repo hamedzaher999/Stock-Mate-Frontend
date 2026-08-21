@@ -7,7 +7,7 @@ import {
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Save } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import StatusBadge from "@/components/shared/StatusBadge";
 import {
@@ -244,6 +244,10 @@ function PermissionsTab({ userId }: { userId: string }) {
   const [resetPermissions, { isLoading: resetting }] =
     useResetUserPermissionsMutation();
 
+  // Tracks which permission code currently has a request in flight, so the
+  // person gets visible feedback and can't fire the same toggle twice.
+  const [pendingCode, setPendingCode] = useState<string | null>(null);
+
   const permissions: Permission[] = permsData?.data ?? [];
   const effective = new Set(userPermsData?.data?.effectivePermissions ?? []);
   const overrides = userPermsData?.data?.overrides ?? [];
@@ -259,16 +263,31 @@ function PermissionsTab({ userId }: { userId: string }) {
   }, {});
 
   async function togglePermission(code: string, currentlyEffective: boolean) {
-    if (isSelf) return;
-    await addPermission({
-      userId,
-      permissionCode: code,
-      effect: currentlyEffective ? "revoke" : "grant",
-    });
+    if (isSelf || pendingCode) return;
+    setPendingCode(code);
+    try {
+      await addPermission({
+        userId,
+        permissionCode: code,
+        effect: currentlyEffective ? "revoke" : "grant",
+      }).unwrap();
+    } catch {
+      // toastMiddleware surfaces the error; nothing else to do here
+    } finally {
+      setPendingCode(null);
+    }
   }
 
   async function clearOverride(code: string) {
-    await removePermission({ userId, permissionCode: code });
+    if (pendingCode) return;
+    setPendingCode(code);
+    try {
+      await removePermission({ userId, permissionCode: code }).unwrap();
+    } catch {
+      // toastMiddleware surfaces the error; nothing else to do here
+    } finally {
+      setPendingCode(null);
+    }
   }
 
   const isLoading = permsLoading || userPermsLoading;
@@ -323,19 +342,27 @@ function PermissionsTab({ userId }: { userId: string }) {
               {perms.map((p) => {
                 const isEffective = effective.has(p.code);
                 const override = overrideByCode.get(p.code);
+                const isPending = pendingCode === p.code;
                 return (
                   <label
                     key={p.id}
                     className="flex items-center gap-2 text-sm cursor-pointer"
                   >
-                    <Checkbox
-                      checked={isEffective}
-                      onCheckedChange={() =>
-                        togglePermission(p.code, isEffective)
-                      }
-                      disabled={isSelf}
-                    />
-                    <span>{p.name}</span>
+                    <span className="relative inline-flex items-center justify-center shrink-0">
+                      <Checkbox
+                        checked={isEffective}
+                        onCheckedChange={() =>
+                          togglePermission(p.code, isEffective)
+                        }
+                        disabled={isSelf || isPending}
+                      />
+                      {isPending && (
+                        <Loader2 className="absolute -inset-e-4 size-3 animate-spin text-muted-foreground" />
+                      )}
+                    </span>
+                    <span className={isPending ? "text-muted-foreground" : ""}>
+                      {p.name}
+                    </span>
                     {override && (
                       <Badge
                         variant={
@@ -348,7 +375,8 @@ function PermissionsTab({ userId }: { userId: string }) {
                     )}
                     {override && !isSelf && (
                       <button
-                        className="text-[10px] text-muted-foreground hover:text-foreground underline"
+                        className="text-[10px] text-muted-foreground hover:text-foreground underline disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                        disabled={isPending}
                         onClick={(e) => {
                           e.preventDefault();
                           clearOverride(p.code);

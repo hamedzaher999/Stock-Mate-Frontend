@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LineChart,
@@ -14,7 +14,6 @@ import {
   useGetPatientVisitsReportQuery,
   getPatientVisitsReportExportUrl,
 } from "@/api/reports.api";
-import { useGetDepartmentsQuery } from "@/api/departments.api";
 import ReportShell from "@/components/shared/ReportShell";
 import AppDataTable, { ColumnDef } from "@/components/shared/AppDataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -28,7 +27,12 @@ import {
 import { Label } from "@/components/primitive/label";
 import { formatDateTime } from "@/lib/formatters";
 import type { PatientVisitsReportRow } from "@/lib/apiTypes";
-
+import DepartmentSelector, {
+  AppEmptyState,
+  useDepartmentSelector,
+} from "@/components/shared/DepartmentSelector";
+import { Skeleton } from "@/components/primitive/skeleton";
+import AppPageHeader from "@/components/shared/AppPageHeader";
 const VISIT_STATUSES = ["completed", "cancelled"] as const;
 
 function defaultFrom(): string {
@@ -49,7 +53,21 @@ export default function PatientVisitsReportPage() {
   const [page, setPage] = useState(1);
   const [exporting, setExporting] = useState(false);
 
-  const { data: deptData } = useGetDepartmentsQuery();
+  const {
+    resolved,
+    noAccess,
+    scoped,
+    departments: selectableDepartments,
+    isLoading: deptLoading,
+  } = useDepartmentSelector("batches");
+
+  useEffect(() => {
+    if (resolved && !departmentId) {
+      setDepartmentId(resolved.id);
+    }
+  }, [resolved, departmentId]);
+
+  const canFilterByDepartment = !scoped;
 
   const queryParams = {
     from,
@@ -61,7 +79,9 @@ export default function PatientVisitsReportPage() {
   };
 
   const { data, isLoading, isFetching, isError, refetch } =
-    useGetPatientVisitsReportQuery(queryParams);
+    useGetPatientVisitsReportQuery(queryParams, {
+      skip: scoped && !departmentId && !noAccess,
+    });
   const result = data?.data;
 
   async function handleExport() {
@@ -105,6 +125,29 @@ export default function PatientVisitsReportPage() {
     },
   ];
 
+  if (deptLoading) {
+    return (
+      <div className="p-6">
+        <Skeleton className="h-72 w-full" />
+      </div>
+    );
+  }
+
+  if (noAccess) {
+    return (
+      <div className="p-6">
+        <AppPageHeader title={t("visits.title")} />
+        <AppEmptyState
+          title={t("common:forbidden")}
+          description={t("common:noAccess", {
+            defaultValue:
+              "Not assigned to an eligible department for this page.",
+          })}
+        />
+      </div>
+    );
+  }
+
   return (
     <ReportShell
       title={t("visits.title")}
@@ -129,32 +172,43 @@ export default function PatientVisitsReportPage() {
         <>
           <div className="space-y-1.5">
             <Label className="text-xs">{t("filters.department")}</Label>
-            <Select
-              value={departmentId}
-              onValueChange={(v) => {
-                setDepartmentId(v);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder={t("filters.allDepartments")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">{t("filters.all")}</SelectItem>
-                {(deptData?.data?.items ?? []).map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {canFilterByDepartment ? (
+              <Select
+                value={departmentId || "__all__"}
+                onValueChange={(v) => {
+                  setDepartmentId(v === "__all__" ? "" : v);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder={t("filters.allDepartments")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{t("filters.all")}</SelectItem>
+                  {selectableDepartments.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <DepartmentSelector
+                context="batches"
+                value={departmentId}
+                onChange={(id) => {
+                  setDepartmentId(id);
+                  setPage(1);
+                }}
+              />
+            )}
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">{t("filters.status")}</Label>
             <Select
-              value={status}
+              value={status || "__all__"}
               onValueChange={(v) => {
-                setStatus(v);
+                setStatus(v === "__all__" ? "" : v);
                 setPage(1);
               }}
             >
@@ -162,7 +216,7 @@ export default function PatientVisitsReportPage() {
                 <SelectValue placeholder={t("filters.allStatuses")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t("filters.all")}</SelectItem>
+                <SelectItem value="__all__">{t("filters.all")}</SelectItem>
                 {VISIT_STATUSES.map((s) => (
                   <SelectItem key={s} value={s}>
                     {t(`status:visit.${s}`, { defaultValue: s })}

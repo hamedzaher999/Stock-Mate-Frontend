@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetTransactionsQuery } from "@/api/inventory.api";
-import { useGetDepartmentsQuery } from "@/api/departments.api";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import AppDataTable, { type ColumnDef } from "@/components/shared/AppDataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -16,19 +15,43 @@ import { cn } from "@/lib/utils";
 import type { InventoryTransaction } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
 import AppErrorState from "@/components/shared/AppErrorState";
+import DepartmentSelector, {
+  AppEmptyState,
+  useDepartmentSelector,
+} from "@/components/shared/DepartmentSelector";
+import { Skeleton } from "@/components/primitive/skeleton";
 export default function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [deptId, setDeptId] = useState("");
   const [txType, setTxType] = useState("");
   const { t } = useTranslation("inventory");
-  const { data: deptData } = useGetDepartmentsQuery();
+
+  const {
+    resolved,
+    noAccess,
+    scoped,
+    departments: selectableDepartments,
+    isLoading: deptLoading,
+  } = useDepartmentSelector("batches");
+
+  useEffect(() => {
+    if (resolved && !deptId) {
+      setDeptId(resolved.id);
+    }
+  }, [resolved, deptId]);
+
+  const canFilterByDepartment = !scoped;
+
   const { data, isLoading, isFetching, isError, refetch } =
-    useGetTransactionsQuery({
-      page,
-      limit: 20,
-      ...(deptId ? { departmentId: deptId } : {}),
-      ...(txType ? { transactionType: txType } : {}),
-    });
+    useGetTransactionsQuery(
+      {
+        page,
+        limit: 20,
+        ...(deptId ? { departmentId: deptId } : {}),
+        ...(txType ? { transactionType: txType } : {}),
+      },
+      { skip: scoped && !deptId && !noAccess },
+    );
 
   const columns: ColumnDef<InventoryTransaction>[] = [
     {
@@ -105,28 +128,75 @@ export default function TransactionsPage() {
     "adjustment_found",
   ];
 
+  if (deptLoading)
+    return (
+      <div>
+        <AppPageHeader title={t("transactions.title")} />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+
+  if (noAccess) {
+    return (
+      <div>
+        <AppPageHeader title={t("transactions.title")} />
+        <AppEmptyState
+          title={t("common:forbidden")}
+          description={t("transactions.noAccess", {
+            defaultValue:
+              "Not assigned to an eligible department for this page.",
+          })}
+        />
+      </div>
+    );
+  }
+
   return (
     <div>
       <AppPageHeader title={t("transactions.title")} />
       <div className="flex gap-3 mb-4 flex-wrap">
-        <Select value={deptId} onValueChange={setDeptId}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder={t("common:filters.allDepartments")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">{t("common:filters.all")}</SelectItem>
-            {(deptData?.data?.items ?? []).map((d) => (
-              <SelectItem key={d.id} value={d.id}>
-                {d.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={txType} onValueChange={setTxType}>
+        {canFilterByDepartment ? (
+          <Select
+            value={deptId || "__all__"}
+            onValueChange={(v) => {
+              setDeptId(v === "__all__" ? "" : v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder={t("common:filters.allDepartments")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+              {selectableDepartments.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <DepartmentSelector
+            context="batches"
+            value={deptId}
+            onChange={(id) => {
+              setDeptId(id);
+              setPage(1);
+            }}
+          />
+        )}
+        <Select
+          value={txType || "__all__"}
+          onValueChange={(v) => {
+            setTxType(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-52">
             <SelectValue placeholder={t("common:filters.allTypes")} />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
             {TX_TYPES.map((type) => (
               <SelectItem key={type} value={type}>
                 {t(`status:transaction.${type}`, {

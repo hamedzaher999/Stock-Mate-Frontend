@@ -2,12 +2,13 @@ import { Loader2 } from "lucide-react";
 import AppErrorState from "@/components/shared/AppErrorState";
 import AppEmptyState from "@/components/shared/AppEmptyState";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PlusCircle } from "lucide-react";
 import {
   useGetStockCountByIdQuery,
   useAddStockCountItemMutation,
   useCompleteStockCountMutation,
+  useCancelStockCountMutation,
 } from "@/api/inventory.api";
 import { useGetVariantsQuery } from "@/api/catalog.api";
 import { useGetBatchesQuery } from "@/api/inventory.api";
@@ -32,12 +33,13 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import ConfirmActionDialog from "@/components/shared/ConfirmActionDialog";
 export default function StockCountDetailPage() {
   const { t } = useTranslation("inventory");
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data, isLoading, isError, refetch } = useGetStockCountByIdQuery(id!);
   const session = data?.data;
-
   const [newItem, setNewItem] = useState({
     variantId: "",
     batchId: "",
@@ -66,6 +68,10 @@ export default function StockCountDetailPage() {
   const [addItem, { isLoading: adding }] = useAddStockCountItemMutation();
   const [completeSession, { isLoading: completing }] =
     useCompleteStockCountMutation();
+  const [cancelSession, { isLoading: cancelling }] =
+    useCancelStockCountMutation();
+
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   async function handleAddItem() {
     if (!newItem.variantId || !newItem.batchId || !newItem.countedQuantity) {
@@ -85,6 +91,16 @@ export default function StockCountDetailPage() {
       setFormError(
         (e as { data?: { message?: string } })?.data?.message ?? "Error",
       );
+    }
+  }
+
+  async function handleCancel() {
+    try {
+      await cancelSession(id!).unwrap();
+      setCancelOpen(false);
+      navigate("/inventory/stock-counts");
+    } catch {
+      // toastMiddleware surfaces the error; keep the dialog open to retry
     }
   }
 
@@ -116,11 +132,26 @@ export default function StockCountDetailPage() {
         title={`${t("stockCounts.title")} – ${session.department?.name}`}
         subtitle={`${t("stockCounts.countDate")}: ${session.countDate}`}
         actions={
-          isDraft &&
-          session.items?.length > 0 && (
-            <Button onClick={() => completeSession(id!)} loading={completing}>
-              {t("stockCounts.complete")}
-            </Button>
+          isDraft && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="text-danger border-danger/30 hover:bg-danger/5"
+                onClick={() => {
+                  setCancelOpen(true);
+                }}
+              >
+                {t("stockCounts.cancel", { defaultValue: "Cancel" })}
+              </Button>
+              {session.items?.length > 0 && (
+                <Button
+                  onClick={() => completeSession(id!)}
+                  loading={completing}
+                >
+                  {t("stockCounts.complete")}
+                </Button>
+              )}
+            </div>
           )
         }
       />
@@ -283,6 +314,22 @@ export default function StockCountDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Cancel confirm dialog */}
+      <ConfirmActionDialog
+        open={cancelOpen}
+        onOpenChange={(v) => !cancelling && setCancelOpen(v)}
+        title={t("stockCounts.cancelTitle", {
+          defaultValue: "Discard Stock Count",
+        })}
+        description={t("stockCounts.cancelWarning", {
+          defaultValue:
+            "This will discard this draft stock count and all counted items. This action cannot be undone.",
+        })}
+        confirmLabel={t("stockCounts.cancel", { defaultValue: "Discard" })}
+        loading={cancelling}
+        onConfirm={handleCancel}
+      />
     </div>
   );
 }

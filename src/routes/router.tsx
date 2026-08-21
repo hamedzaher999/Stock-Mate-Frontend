@@ -133,6 +133,10 @@ const UsersPage = lazy(() => import("@/features/users/pages/UsersPage"));
 const UserDetailPage = lazy(
   () => import("@/features/users/pages/UserDetailPage"),
 );
+const SupplierDetailPage = lazy(
+  () => import("@/features/suppliers/pages/SupplierDetailPage"),
+);
+
 const VisitDetailPage = lazy(
   () => import("@/features/medical-visits/pages/VisitDetailPage"),
 );
@@ -418,7 +422,10 @@ export const router = createBrowserRouter([
             element: (
               <PermissionRoute permission={PERMISSIONS.MANAGE_SUPPLIERS} />
             ),
-            children: [{ path: "/suppliers", element: wrap(SuppliersPage) }],
+            children: [
+              { path: "/suppliers", element: wrap(SuppliersPage) },
+              { path: "/suppliers/:id", element: wrap(SupplierDetailPage) },
+            ],
           },
 
           // Stock settings

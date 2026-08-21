@@ -1,4 +1,10 @@
 {
+  "searchPlaceholder": "Search departments...",
+  "filters": {
+    "allManagerStatus": "Manager: All",
+    "hasManager": "Has manager",
+    "noManager": "No manager"
+  },
   "title": "Departments",
   "new": "New Department",
   "addDepartment": "Add Department",

@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useGetStockCountsQuery,
   useCreateStockCountMutation,
 } from "@/api/inventory.api";
-import { useGetDepartmentsQuery } from "@/api/departments.api";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import AppDataTable, { type ColumnDef } from "@/components/shared/AppDataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -30,7 +29,9 @@ import { formatDate } from "@/lib/formatters";
 import type { StockCountSession } from "@/lib/apiTypes";
 import { useTranslation } from "react-i18next";
 import AppErrorState from "@/components/shared/AppErrorState";
-
+import DepartmentSelector, {
+  useDepartmentSelector,
+} from "@/components/shared/DepartmentSelector";
 export default function StockCountsPage() {
   const { t } = useTranslation("inventory");
   const navigate = useNavigate();
@@ -43,7 +44,20 @@ export default function StockCountsPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { data: deptData } = useGetDepartmentsQuery();
+  const {
+    resolved,
+    noAccess,
+    scoped,
+    departments: selectableDepartments,
+    isLoading: deptLoading,
+  } = useDepartmentSelector("stock");
+
+  useEffect(() => {
+    if (open && resolved && !form.departmentId) {
+      setForm((f) => ({ ...f, departmentId: resolved.id }));
+    }
+  }, [open, resolved]);
+
   const { data, isLoading, isFetching, isError, refetch } =
     useGetStockCountsQuery({ page, limit: 20 });
   const [createStockCount, { isLoading: creating }] =
@@ -68,6 +82,16 @@ export default function StockCountsPage() {
         (e as { data?: { message?: string } })?.data?.message ?? "Error",
       );
     }
+  }
+
+  function openCreateDialog() {
+    setForm({
+      departmentId: resolved ? resolved.id : "",
+      countDate: new Date().toISOString().slice(0, 10),
+      notes: "",
+    });
+    setFormError(null);
+    setOpen(true);
   }
 
   const columns: ColumnDef<StockCountSession>[] = [
@@ -108,7 +132,9 @@ export default function StockCountsPage() {
       <AppPageHeader
         title={t("stockCounts.title")}
         actions={
-          <Button onClick={() => setOpen(true)}>{t("stockCounts.new")}</Button>
+          <Button onClick={openCreateDialog} disabled={deptLoading}>
+            {t("stockCounts.new")}
+          </Button>
         }
       />
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -133,51 +159,82 @@ export default function StockCountsPage() {
             <DialogTitle>{t("stockCounts.new")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-1.5">
-              <Label required>{t("stockCounts.department")}</Label>
-              <Select
-                value={form.departmentId}
-                onValueChange={(v) => setForm({ ...form, departmentId: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={t("stockCounts.selectDepartment")}
+            {noAccess ? (
+              <p className="text-sm text-muted-foreground">
+                {t("stockCounts.noAccess", {
+                  defaultValue:
+                    "Not assigned to an eligible department for stock counts.",
+                })}
+              </p>
+            ) : (
+              <>
+                <div className="space-y-1.5">
+                  <Label required>{t("stockCounts.department")}</Label>
+                  {scoped ? (
+                    <DepartmentSelector
+                      context="stock"
+                      value={form.departmentId}
+                      onChange={(id) =>
+                        setForm((f) => ({ ...f, departmentId: id }))
+                      }
+                    />
+                  ) : (
+                    <Select
+                      value={form.departmentId}
+                      onValueChange={(v) =>
+                        setForm({ ...form, departmentId: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t("stockCounts.selectDepartment")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectableDepartments.map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label required>{t("stockCounts.countDate")}</Label>
+                  <Input
+                    type="date"
+                    value={form.countDate}
+                    onChange={(e) =>
+                      setForm({ ...form, countDate: e.target.value })
+                    }
                   />
-                </SelectTrigger>
-                <SelectContent>
-                  {(deptData?.data?.items ?? []).map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label required>{t("stockCounts.countDate")}</Label>
-              <Input
-                type="date"
-                value={form.countDate}
-                onChange={(e) =>
-                  setForm({ ...form, countDate: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t("stockCounts.notes")}</Label>
-              <Textarea
-                value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                rows={2}
-              />
-            </div>
-            {formError && <p className="text-xs text-danger">{formError}</p>}
+                </div>
+                <div className="space-y-1.5">
+                  <Label>{t("stockCounts.notes")}</Label>
+                  <Textarea
+                    value={form.notes}
+                    onChange={(e) =>
+                      setForm({ ...form, notes: e.target.value })
+                    }
+                    rows={2}
+                  />
+                </div>
+                {formError && (
+                  <p className="text-xs text-danger">{formError}</p>
+                )}
+              </>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               {t("common:actions.cancel")}
             </Button>
-            <Button onClick={handleCreate} loading={creating}>
+            <Button
+              onClick={handleCreate}
+              loading={creating}
+              disabled={noAccess}
+            >
               {t("stockCounts.createSession")}
             </Button>
           </DialogFooter>

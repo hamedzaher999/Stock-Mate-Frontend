@@ -37,6 +37,8 @@ import {
   useUpdateDepartmentStatusMutation,
 } from "@/api/departments.api";
 import AppErrorState from "@/components/shared/AppErrorState";
+import AppSearchInput from "@/components/shared/AppSearchInput";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 const DEPT_TYPES = [
   "clinical",
   "pharmacy",
@@ -48,11 +50,23 @@ const DEPT_TYPES = [
 
 export default function DepartmentsPage() {
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [managerFilter, setManagerFilter] = useState("");
+
   const { data, isLoading, isFetching, isError, refetch } =
-    useGetDepartmentsQuery({ page, limit: 20 });
+    useGetDepartmentsQuery({
+      page,
+      limit: 20,
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+      ...(typeFilter ? { type: typeFilter } : {}),
+      ...(statusFilter ? { isActive: statusFilter === "active" } : {}),
+      ...(managerFilter ? { hasManager: managerFilter === "yes" } : {}),
+    });
   const [create, { isLoading: creating }] = useCreateDepartmentMutation();
-  const [updateStatus, { isLoading: updatingStatus }] =
-    useUpdateDepartmentStatusMutation();
+  const [updateStatus] = useUpdateDepartmentStatusMutation();
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
   async function handleStatusToggle(id: string, isActive: boolean) {
@@ -210,6 +224,82 @@ export default function DepartmentsPage() {
           </Button>
         }
       />
+
+      <div className="flex gap-3 mb-4 flex-wrap items-center">
+        <AppSearchInput
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+          placeholder={t("searchPlaceholder", {
+            defaultValue: "Search departments...",
+          })}
+          className="max-w-xs"
+        />
+        <Select
+          value={typeFilter || "__all__"}
+          onValueChange={(v) => {
+            setTypeFilter(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-52">
+            <SelectValue placeholder={t("common:filters.allTypes")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+            {DEPT_TYPES.map((dt) => (
+              <SelectItem key={dt} value={dt} className="capitalize">
+                {t(`types.${dt}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={statusFilter || "__all__"}
+          onValueChange={(v) => {
+            setStatusFilter(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder={t("common:filters.allStatuses")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+            <SelectItem value="active">{t("status:user.active")}</SelectItem>
+            <SelectItem value="inactive">
+              {t("status:user.inactive")}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <Select
+          value={managerFilter || "__all__"}
+          onValueChange={(v) => {
+            setManagerFilter(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-44">
+            <SelectValue
+              placeholder={t("filters.allManagerStatus", {
+                defaultValue: "Manager: All",
+              })}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+            <SelectItem value="yes">
+              {t("filters.hasManager", { defaultValue: "Has manager" })}
+            </SelectItem>
+            <SelectItem value="no">
+              {t("filters.noManager", { defaultValue: "No manager" })}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {isError && !isLoading ? (
         <AppErrorState onRetry={() => refetch()} />
       ) : (

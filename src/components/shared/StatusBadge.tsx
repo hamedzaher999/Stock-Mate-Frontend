@@ -29,11 +29,6 @@ const STATUS_MAP: Record<string, Record<string, BadgeVariant>> = {
     cancelled: "neutral",
   },
 
-  stockCount: {
-    draft: "warning",
-    completed: "success",
-  },
-
   queue: {
     waiting: "warning",
     in_consultation: "info",
@@ -51,7 +46,11 @@ const STATUS_MAP: Record<string, Record<string, BadgeVariant>> = {
     completed: "success",
     cancelled: "neutral",
   },
-
+  stockCount: {
+    draft: "warning",
+    completed: "success",
+    cancelled: "neutral",
+  },
   prescription: {
     active: "success",
     completed: "neutral",

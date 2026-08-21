@@ -11,7 +11,6 @@ import type {
   StockCountItem,
   CreateStockSettingResult,
 } from "@/lib/apiTypes";
-
 export const inventoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Stock Settings
@@ -250,6 +249,13 @@ export const inventoryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["StockCount", "LiveStock"],
     }),
+    cancelStockCount: builder.mutation<ApiResponse<null>, string>({
+      query: (id) => ({
+        url: `/inventory/stock-counts/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["StockCount"],
+    }),
   }),
 });
 
@@ -272,4 +278,5 @@ export const {
   useAddStockCountItemMutation,
   useUpdateStockCountItemMutation,
   useCompleteStockCountMutation,
+  useCancelStockCountMutation,
 } = inventoryApi;

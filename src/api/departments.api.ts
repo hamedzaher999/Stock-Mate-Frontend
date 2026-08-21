@@ -21,6 +21,7 @@ export const departmentsApi = baseApi.injectEndpoints({
         limit?: number;
         type?: string;
         isActive?: boolean;
+        hasManager?: boolean;
         search?: string;
       } | void
     >({

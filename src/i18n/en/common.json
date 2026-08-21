@@ -7,7 +7,9 @@
     "all": "All",
     "allStatuses": "All statuses",
     "allDepartments": "All departments",
-    "allTypes": "All types"
+    "allTypes": "All types",
+    "allMaterials": "All materials",
+    "allCycleStatuses": "All cycle statuses"
   },
   "actions": {
     "save": "Save",

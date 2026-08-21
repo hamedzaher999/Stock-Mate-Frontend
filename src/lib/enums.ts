@@ -36,7 +36,7 @@ export type ReferenceType =
   | "adjustment"
   | "stock_count";
 
-export type StockCountStatus = "draft" | "completed";
+export type StockCountStatus = "draft" | "completed" | "cancelled";
 export type QueueStatus =
   | "waiting"
   | "in_consultation"

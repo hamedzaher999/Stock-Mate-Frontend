@@ -20,6 +20,7 @@ import {
 import type { Supplier } from "@/lib/apiTypes";
 import type { ColumnDef } from "@/components/shared/AppDataTable";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 interface Form {
   name: string;
   contactPerson: string;
@@ -37,6 +38,7 @@ const EMPTY: Form = {
 
 export default function SuppliersPage() {
   const { t } = useTranslation("suppliers");
+  const navigate = useNavigate();
   const { data, isLoading } = useGetSuppliersQuery();
   const [create, { isLoading: creating }] = useCreateSupplierMutation();
   const [update, { isLoading: updating }] = useUpdateSupplierMutation();
@@ -117,6 +119,7 @@ export default function SuppliersPage() {
         columns={columns}
         isLoading={isLoading}
         rowKey={(r) => r.id}
+        onRowClick={(r) => navigate(`/suppliers/${r.id}`)}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>

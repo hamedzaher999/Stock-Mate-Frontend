@@ -36,6 +36,7 @@ import { Loader2 } from "lucide-react";
 import DepartmentSelector, {
   useDepartmentSelector,
 } from "@/components/shared/DepartmentSelector";
+import { useGetVariantsQuery } from "@/api/catalog.api";
 export default function AdjustmentsPage() {
   const { t } = useTranslation("inventory");
   const canCreate = usePermission(PERMISSIONS.PERFORM_INVENTORY_ADJUSTMENT);
@@ -52,14 +53,36 @@ export default function AdjustmentsPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { data, isLoading, isFetching, isError, refetch } =
-    useGetAdjustmentsQuery({ page, limit: 20 });
+  // ── Filters ──────────────────────────────────────────────
+  const [filterDeptId, setFilterDeptId] = useState("");
+  const [filterVariantId, setFilterVariantId] = useState("");
+  const [filterType, setFilterType] = useState("");
 
   const {
     resolved,
     noAccess,
+    scoped,
+    departments: selectableDepartments,
     isLoading: deptLoading,
   } = useDepartmentSelector("stock");
+
+  const canFilterByDepartment = !scoped;
+
+  const { data: filterVariantData } = useGetVariantsQuery({
+    isActive: true,
+    limit: 100,
+  } as { isActive: boolean; limit: number });
+
+  const { data, isLoading, isFetching, isError, refetch } =
+    useGetAdjustmentsQuery({
+      page,
+      limit: 20,
+      ...(canFilterByDepartment && filterDeptId
+        ? { departmentId: filterDeptId }
+        : {}),
+      ...(filterVariantId ? { variantId: filterVariantId } : {}),
+      ...(filterType ? { adjustmentType: filterType } : {}),
+    });
 
   useEffect(() => {
     if (open && resolved && !form.departmentId) {
@@ -217,6 +240,69 @@ export default function AdjustmentsPage() {
           )
         }
       />
+
+      <div className="flex gap-3 mb-4 flex-wrap">
+        {canFilterByDepartment && (
+          <Select
+            value={filterDeptId || "__all__"}
+            onValueChange={(v) => {
+              setFilterDeptId(v === "__all__" ? "" : v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder={t("common:filters.allDepartments")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+              {selectableDepartments.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        <Select
+          value={filterVariantId || "__all__"}
+          onValueChange={(v) => {
+            setFilterVariantId(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-52">
+            <SelectValue placeholder={t("common:filters.allMaterials")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+            {(filterVariantData?.data?.items ?? []).map((v) => (
+              <SelectItem key={v.id} value={v.id}>
+                {v.variantName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={filterType || "__all__"}
+          onValueChange={(v) => {
+            setFilterType(v === "__all__" ? "" : v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder={t("common:filters.allTypes")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+            {["damaged", "expired", "shrinkage", "found"].map((type) => (
+              <SelectItem key={type} value={type}>
+                {t(`status:adjustment.${type}`, { defaultValue: type })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         {isError && !isLoading ? (
           <AppErrorState onRetry={() => refetch()} />
