@@ -46,6 +46,9 @@ const ReportsPage = lazy(() => import("@/features/reports/pages/ReportsPage"));
 const PatientDetailPage = lazy(
   () => import("@/features/patients/pages/PatientDetailPage"),
 );
+const PatientHistoryPrintPage = lazy(
+  () => import("@/features/patients/pages/PatientHistoryPrintPage"),
+);
 const MySessionsPage = lazy(
   () => import("@/features/users/pages/MySessionsPage"),
 );
@@ -216,6 +219,10 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     errorElement: <RouteErrorBoundary />,
     children: [
+      {
+        path: "/patients/:id/print",
+        element: wrap(PatientHistoryPrintPage),
+      },
       {
         element: <ShellLayout />,
         errorElement: <RouteErrorBoundary />,

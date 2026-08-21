@@ -122,31 +122,35 @@ export default function ConsumptionPage() {
 
   if (deptLoading) {
     return (
-      <div>
+      <div className="p-6 max-w-2xl mx-auto space-y-6">
         <AppPageHeader title={t("consumption.title")} />
-        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-72 w-full" />
       </div>
     );
   }
 
   if (noAccess) {
     return (
-      <div>
+      <div className="p-6 max-w-2xl mx-auto space-y-6">
         <AppPageHeader title={t("consumption.title")} />
-        <AppEmptyState
-          title={t("common:forbidden")}
-          description={t("consumption.noAccess", {
-            defaultValue:
-              "Not assigned to an eligible department for this page.",
-          })}
-        />
+        <Card>
+          <CardContent className="p-6">
+            <AppEmptyState
+              title={t("common:forbidden")}
+              description={t("consumption.noAccess", {
+                defaultValue:
+                  "Not assigned to an eligible department for this page.",
+              })}
+            />
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   if (result) {
     return (
-      <div>
+      <div className="p-6 max-w-2xl mx-auto space-y-6">
         <AppPageHeader title={t("consumption.result")} />
         <Card>
           <CardHeader>
@@ -181,116 +185,121 @@ export default function ConsumptionPage() {
   }
 
   return (
-    <div>
+    <div className="p-6 max-w-2xl mx-auto space-y-6">
       <AppPageHeader title={t("consumption.title")} />
-      <div className="max-w-xl space-y-4">
-        <div className="space-y-1.5">
-          <Label required>{t("consumption.department")}</Label>
-          <DepartmentSelector
-            context="stock"
-            value={deptId}
-            onChange={(id) => setDeptId(id)}
-          />
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center gap-1.5">
-            <Label>{t("consumption.items")}</Label>
-            {stockSettingsFetching && (
-              <Loader2 className="size-3 animate-spin text-muted-foreground" />
-            )}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("consumption.title")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-1.5">
+            <Label required>{t("consumption.department")}</Label>
+            <DepartmentSelector
+              context="stock"
+              value={deptId}
+              onChange={(id) => setDeptId(id)}
+            />
           </div>
-          {items.map((item, i) => (
-            <div key={i} className="flex items-end gap-2">
-              <div className="flex-1 space-y-1.5">
-                <Label className="text-xs">{t("consumption.material")}</Label>
-                <Select
-                  value={item.variantId}
-                  onValueChange={(v) => updateItem(i, "variantId", v)}
-                  disabled={!deptId}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        deptId
-                          ? t("consumption.selectMaterial", {
-                              defaultValue: "Select...",
-                            })
-                          : t("consumption.selectDepartmentFirst", {
-                              defaultValue: "Select a department first",
-                            })
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {variants.length === 0 && deptId && (
-                      <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                        {t("consumption.noConfiguredMaterials", {
-                          defaultValue:
-                            "No materials are configured for this department.",
-                        })}
-                      </div>
-                    )}
-                    {variants.map((v) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.variantName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-24 space-y-1.5">
-                <Label className="text-xs">{t("consumption.qty")}</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={item.quantity}
-                  onChange={(e) =>
-                    updateItem(i, "quantity", parseInt(e.target.value))
-                  }
-                />
-              </div>
-              {items.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeItem(i)}
-                  className="mb-0.5"
-                >
-                  <Trash2 className="size-4 text-danger" />
-                </Button>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5">
+              <Label>{t("consumption.items")}</Label>
+              {stockSettingsFetching && (
+                <Loader2 className="size-3 animate-spin text-muted-foreground" />
               )}
             </div>
-          ))}
+            {items.map((item, i) => (
+              <div key={i} className="flex items-end gap-2">
+                <div className="flex-1 space-y-1.5">
+                  <Label className="text-xs">{t("consumption.material")}</Label>
+                  <Select
+                    value={item.variantId}
+                    onValueChange={(v) => updateItem(i, "variantId", v)}
+                    disabled={!deptId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          deptId
+                            ? t("consumption.selectMaterial", {
+                                defaultValue: "Select...",
+                              })
+                            : t("consumption.selectDepartmentFirst", {
+                                defaultValue: "Select a department first",
+                              })
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {variants.length === 0 && deptId && (
+                        <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                          {t("consumption.noConfiguredMaterials", {
+                            defaultValue:
+                              "No materials are configured for this department.",
+                          })}
+                        </div>
+                      )}
+                      {variants.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.variantName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="w-24 space-y-1.5">
+                  <Label className="text-xs">{t("consumption.qty")}</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={item.quantity}
+                    onChange={(e) =>
+                      updateItem(i, "quantity", parseInt(e.target.value))
+                    }
+                  />
+                </div>
+                {items.length > 1 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeItem(i)}
+                    className="mb-0.5"
+                  >
+                    <Trash2 className="size-4 text-danger" />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={addItem}
+              disabled={!deptId}
+            >
+              <PlusCircle className="size-4" /> {t("consumption.addItem")}
+            </Button>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>{t("consumption.notes")}</Label>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+            />
+          </div>
+
+          {error && <p className="text-xs text-danger">{error}</p>}
           <Button
-            variant="outline"
-            size="sm"
-            onClick={addItem}
+            onClick={handleSubmit}
+            loading={isLoading}
             disabled={!deptId}
+            className="w-full"
           >
-            <PlusCircle className="size-4" /> {t("consumption.addItem")}
+            {t("consumption.record")}
           </Button>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label>{t("consumption.notes")}</Label>
-          <Textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={2}
-          />
-        </div>
-
-        {error && <p className="text-xs text-danger">{error}</p>}
-        <Button
-          onClick={handleSubmit}
-          loading={isLoading}
-          disabled={!deptId}
-          className="w-full"
-        >
-          {t("consumption.record")}
-        </Button>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

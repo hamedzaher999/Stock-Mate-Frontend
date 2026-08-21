@@ -6,7 +6,8 @@ export type DeptSelectorContext =
   | "queue"
   | "refill-requests"
   | "periodic-schedules"
-  | "disposal";
+  | "disposal"
+  | "stock-settings";
 export interface SelectableDepartmentsResponse {
   scoped: boolean;
   departments: { id: string; name: string; type: string }[];

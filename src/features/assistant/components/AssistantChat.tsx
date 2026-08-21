@@ -54,7 +54,11 @@ export default function AssistantChat({
       .map((m) => ({ role: m.role, content: m.content }));
 
     try {
-      const res = await sendMessage({ message: text, history }).unwrap();
+      const res = await sendMessage({
+        message: text,
+        history,
+        platform: "web",
+      }).unwrap();
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: res.data.answer },

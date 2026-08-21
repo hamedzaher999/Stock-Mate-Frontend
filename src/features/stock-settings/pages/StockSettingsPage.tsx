@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, Pencil, Plus, PlusCircle, Trash2 } from "lucide-react";
 import AppPageHeader from "@/components/shared/AppPageHeader";
 import AppDataTable from "@/components/shared/AppDataTable";
@@ -27,7 +27,6 @@ import {
   useUpdateStockSettingMutation,
 } from "@/api/inventory.api";
 import { useGetVariantsQuery } from "@/api/catalog.api";
-import { useGetDepartmentsQuery } from "@/api/departments.api";
 import type {
   CreateStockSettingResultItem,
   StockSetting,
@@ -35,6 +34,11 @@ import type {
 import type { ColumnDef } from "@/components/shared/AppDataTable";
 import { useTranslation } from "react-i18next";
 import AppErrorState from "@/components/shared/AppErrorState";
+import DepartmentSelector, {
+  AppEmptyState,
+  useDepartmentSelector,
+} from "@/components/shared/DepartmentSelector";
+import { Skeleton } from "@/components/primitive/skeleton";
 interface StockSettingItemForm {
   variantId: string;
   storageLocation: string;
@@ -67,16 +71,35 @@ interface EditForm {
 export default function StockSettingsPage() {
   const { t } = useTranslation("inventory");
   const [page, setPage] = useState(1);
-  const [deptFilter, setDeptFilter] = useState("");
   const [variantFilter, setVariantFilter] = useState("");
 
+  const [deptFilter, setDeptFilter] = useState("");
+  const {
+    resolved,
+    noAccess,
+    scoped,
+    departments: selectableDepartments,
+    isLoading: deptLoading,
+  } = useDepartmentSelector("stock-settings");
+
+  useEffect(() => {
+    if (resolved && !deptFilter) {
+      setDeptFilter(resolved.id);
+    }
+  }, [resolved, deptFilter]);
+
+  const canFilterByDepartment = !scoped;
+
   const { data, isLoading, isFetching, isError, refetch } =
-    useGetStockSettingsQuery({
-      page,
-      limit: 20,
-      ...(deptFilter ? { departmentId: deptFilter } : {}),
-      ...(variantFilter ? { variantId: variantFilter } : {}),
-    });
+    useGetStockSettingsQuery(
+      {
+        page,
+        limit: 20,
+        ...(deptFilter ? { departmentId: deptFilter } : {}),
+        ...(variantFilter ? { variantId: variantFilter } : {}),
+      },
+      { skip: scoped && !deptFilter && !noAccess },
+    );
   const [create, { isLoading: creating }] = useCreateStockSettingMutation();
   const [update, { isLoading: updating }] = useUpdateStockSettingMutation();
   const [updateStatus] = useUpdateStockSettingStatusMutation();
@@ -94,7 +117,6 @@ export default function StockSettingsPage() {
     isActive: true,
     limit: 100,
   });
-  const { data: deptData } = useGetDepartmentsQuery();
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Form>(EMPTY);
@@ -108,11 +130,20 @@ export default function StockSettingsPage() {
   const [editError, setEditError] = useState<string | null>(null);
 
   const variants = variantData?.data?.items ?? [];
-  const departments = deptData?.data?.items ?? [];
 
   const [createResults, setCreateResults] = useState<
     CreateStockSettingResultItem[] | null
   >(null);
+
+  function openCreateDialog() {
+    setForm({
+      departmentId: resolved ? resolved.id : "",
+      items: [{ ...EMPTY_ITEM }],
+    });
+    setFormError(null);
+    setCreateResults(null);
+    setOpen(true);
+  }
 
   function addFormItem() {
     setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITEM }] }));
@@ -261,49 +292,77 @@ export default function StockSettingsPage() {
     },
   ];
 
+  if (deptLoading) {
+    return (
+      <div className="p-6">
+        <AppPageHeader title={t("stockSettings.title")} />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
+
+  if (noAccess) {
+    return (
+      <div className="p-6">
+        <AppPageHeader title={t("stockSettings.title")} />
+        <AppEmptyState
+          title={t("common:forbidden")}
+          description={t("stockSettings.noAccess", {
+            defaultValue:
+              "Not assigned to an eligible department for this page.",
+          })}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
       <AppPageHeader
         title={t("stockSettings.title")}
         actions={
-          <Button
-            onClick={() => {
-              setForm(EMPTY);
-              setFormError(null);
-              setCreateResults(null);
-              setOpen(true);
-            }}
-          >
+          <Button onClick={openCreateDialog}>
             <Plus className="size-4 mr-2" />
             {t("stockSettings.create")}
           </Button>
         }
       />
 
-      <div className="flex gap-3 mb-4 flex-wrap">
+      <div className="flex gap-3 mb-4 flex-wrap items-center">
+        {canFilterByDepartment ? (
+          <Select
+            value={deptFilter || "__all__"}
+            onValueChange={(v) => {
+              setDeptFilter(v === "__all__" ? "" : v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder={t("common:filters.allDepartments")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
+              {selectableDepartments.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <DepartmentSelector
+            context="stock-settings"
+            value={deptFilter}
+            onChange={(id) => {
+              setDeptFilter(id);
+              setPage(1);
+            }}
+          />
+        )}
         <Select
-          value={deptFilter}
+          value={variantFilter || "__all__"}
           onValueChange={(v) => {
-            setDeptFilter(v);
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder={t("common:filters.allDepartments")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">{t("common:filters.all")}</SelectItem>
-            {departments.map((d) => (
-              <SelectItem key={d.id} value={d.id}>
-                {d.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={variantFilter}
-          onValueChange={(v) => {
-            setVariantFilter(v);
+            setVariantFilter(v === "__all__" ? "" : v);
             setPage(1);
           }}
         >
@@ -311,7 +370,7 @@ export default function StockSettingsPage() {
             <SelectValue placeholder={t("stockSettings.allVariants")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">{t("common:filters.all")}</SelectItem>
+            <SelectItem value="__all__">{t("common:filters.all")}</SelectItem>
             {variants.map((v) => (
               <SelectItem key={v.id} value={v.id}>
                 {v.variantName}
@@ -348,23 +407,33 @@ export default function StockSettingsPage() {
           <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-1">
             <div className="space-y-1">
               <Label required>{t("stockSettings.department")}</Label>
-              <Select
-                value={form.departmentId}
-                onValueChange={(v) => setForm({ ...form, departmentId: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={t("stockSettings.selectDepartment")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {scoped ? (
+                <DepartmentSelector
+                  context="stock-settings"
+                  value={form.departmentId}
+                  onChange={(id) =>
+                    setForm((f) => ({ ...f, departmentId: id }))
+                  }
+                />
+              ) : (
+                <Select
+                  value={form.departmentId}
+                  onValueChange={(v) => setForm({ ...form, departmentId: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t("stockSettings.selectDepartment")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectableDepartments.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, PlusCircle, Trash2 } from "lucide-react";
 import { useGetQueueQuery } from "@/api/queue.api";
@@ -29,6 +29,8 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import { formatRelative } from "@/lib/formatters";
 import type { QueueEntry } from "@/lib/apiTypes";
 import { Skeleton } from "@/components/primitive/skeleton";
+import { useLocation } from "react-router-dom";
+import { useCurrentUser } from "@/hooks/usePermission";
 
 interface PrescriptionItem {
   variantId: string;
@@ -48,8 +50,12 @@ interface PrescriptionForm {
 
 export default function ConsultationPage() {
   const { t } = useTranslation("visits");
+  const location = useLocation();
+  const currentUser = useCurrentUser();
 
-  const [selectedEntry, setSelectedEntry] = useState<QueueEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<QueueEntry | null>(
+    (location.state as { queueEntry?: QueueEntry } | null)?.queueEntry ?? null,
+  );
   const [clinicalNotes, setClinicalNotes] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
   const [externalMedications, setExternalMedications] = useState("");
@@ -62,6 +68,20 @@ export default function ConsultationPage() {
     isLoading: queueLoading,
     isFetching: queueFetching,
   } = useGetQueueQuery({ status: "waiting" }, { pollingInterval: 30000 });
+
+  const { data: myLockedData, isFetching: myLockedFetching } = useGetQueueQuery(
+    { status: "in_consultation" },
+    { skip: !!selectedEntry },
+  );
+
+  useEffect(() => {
+    if (selectedEntry || myLockedFetching) return;
+    const mine = myLockedData?.data?.items?.find(
+      (e) => e.lockedById === currentUser?.id,
+    );
+    if (mine) setSelectedEntry(mine);
+  }, [selectedEntry, myLockedData, myLockedFetching, currentUser]);
+
   const { data: variantsData, isLoading: variantsLoading } =
     useGetVariantsQuery({
       isActive: true,
@@ -76,8 +96,8 @@ export default function ConsultationPage() {
 
   async function handleSelectPatient(entry: QueueEntry) {
     try {
-      await selectPatient({ queueEntryId: entry.id }).unwrap();
-      setSelectedEntry(entry);
+      const res = await selectPatient({ queueEntryId: entry.id }).unwrap();
+      setSelectedEntry(res.data);
     } catch (e: unknown) {
       setError(
         (e as { data?: { message?: string } })?.data?.message ??
@@ -238,7 +258,7 @@ export default function ConsultationPage() {
           title={t("consultationRoom")}
           subtitle={t("selectPatientSubtitle")}
         />
-        {queueLoading ? (
+        {queueLoading || myLockedFetching ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[...Array(6)].map((_, i) => (
               <Skeleton key={i} className="h-24" />

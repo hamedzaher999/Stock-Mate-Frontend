@@ -160,8 +160,8 @@ export default function QueuePage() {
 
   async function handleSelect(entry: QueueEntry) {
     try {
-      await selectPatient({ queueEntryId: entry.id }).unwrap();
-      navigate("/consultation");
+      const res = await selectPatient({ queueEntryId: entry.id }).unwrap();
+      navigate("/consultation", { state: { queueEntry: res.data } });
     } catch {
       // ignore — error handled server-side
     }

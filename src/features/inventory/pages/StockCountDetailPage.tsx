@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import AppErrorState from "@/components/shared/AppErrorState";
 import AppEmptyState from "@/components/shared/AppEmptyState";
 import { useState } from "react";
@@ -9,8 +9,9 @@ import {
   useAddStockCountItemMutation,
   useCompleteStockCountMutation,
   useCancelStockCountMutation,
+  useUpdateStockCountItemMutation,
+  useGetStockSettingsQuery,
 } from "@/api/inventory.api";
-import { useGetVariantsQuery } from "@/api/catalog.api";
 import { useGetBatchesQuery } from "@/api/inventory.api";
 import {
   Card,
@@ -34,6 +35,14 @@ import AppPageHeader from "@/components/shared/AppPageHeader";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import ConfirmActionDialog from "@/components/shared/ConfirmActionDialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/primitive/dialog";
+import { StockCountItem } from "@/lib/apiTypes";
 export default function StockCountDetailPage() {
   const { t } = useTranslation("inventory");
   const { id } = useParams<{ id: string }>();
@@ -47,10 +56,18 @@ export default function StockCountDetailPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { data: variantData } = useGetVariantsQuery({
-    isActive: true,
-    limit: 100,
-  } as { isActive: boolean; limit: number });
+  const { data: stockSettingsData, isFetching: stockSettingsFetching } =
+    useGetStockSettingsQuery(
+      {
+        departmentId: session?.departmentId,
+        isActive: true,
+        limit: 100,
+      } as { departmentId: string; isActive: boolean; limit: number },
+      { skip: !session?.departmentId },
+    );
+  const stockSettingVariants = (stockSettingsData?.data?.items ?? [])
+    .map((s) => s.variant)
+    .filter((v): v is { id: string; variantName: string; sku: string } => !!v);
   const {
     data: batchData,
     isLoading: batchesLoading,
@@ -66,12 +83,48 @@ export default function StockCountDetailPage() {
   const batchesBusy = batchesLoading || batchesFetching;
 
   const [addItem, { isLoading: adding }] = useAddStockCountItemMutation();
+  const [updateItem, { isLoading: updatingItem }] =
+    useUpdateStockCountItemMutation();
   const [completeSession, { isLoading: completing }] =
     useCompleteStockCountMutation();
   const [cancelSession, { isLoading: cancelling }] =
     useCancelStockCountMutation();
 
   const [cancelOpen, setCancelOpen] = useState(false);
+
+  const [editTarget, setEditTarget] = useState<StockCountItem | null>(null);
+  const [editCountedQuantity, setEditCountedQuantity] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+
+  function openEditItem(item: StockCountItem) {
+    setEditTarget(item);
+    setEditCountedQuantity(String(item.countedQuantity));
+    setEditNotes(item.notes ?? "");
+    setEditError(null);
+  }
+
+  async function handleEditSave() {
+    if (!editTarget || !id) return;
+    if (editCountedQuantity === "" || Number(editCountedQuantity) < 0) {
+      setEditError(t("stockCounts.allFieldsRequired"));
+      return;
+    }
+    setEditError(null);
+    try {
+      await updateItem({
+        sessionId: id,
+        itemId: editTarget.id,
+        countedQuantity: Number(editCountedQuantity),
+        ...(editNotes ? { notes: editNotes } : {}),
+      }).unwrap();
+      setEditTarget(null);
+    } catch (e: unknown) {
+      setEditError(
+        (e as { data?: { message?: string } })?.data?.message ?? "Error",
+      );
+    }
+  }
 
   async function handleAddItem() {
     if (!newItem.variantId || !newItem.batchId || !newItem.countedQuantity) {
@@ -219,6 +272,15 @@ export default function StockCountDetailPage() {
                       {item.variance}
                     </p>
                   </div>
+                  {isDraft && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openEditItem(item)}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -235,7 +297,12 @@ export default function StockCountDetailPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label>{t("stockCounts.material")}</Label>
+                <div className="flex items-center gap-1.5">
+                  <Label>{t("stockCounts.material")}</Label>
+                  {stockSettingsFetching && (
+                    <Loader2 className="size-3 animate-spin text-muted-foreground" />
+                  )}
+                </div>
                 <Select
                   value={newItem.variantId}
                   onValueChange={(v) =>
@@ -246,7 +313,15 @@ export default function StockCountDetailPage() {
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {(variantData?.data?.items ?? []).map((v) => (
+                    {stockSettingVariants.length === 0 && (
+                      <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                        {t("stockCounts.noConfiguredMaterials", {
+                          defaultValue:
+                            "No materials are configured for this department.",
+                        })}
+                      </div>
+                    )}
+                    {stockSettingVariants.map((v) => (
                       <SelectItem key={v.id} value={v.id}>
                         {v.variantName}
                       </SelectItem>
@@ -314,6 +389,61 @@ export default function StockCountDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Edit item dialog */}
+      <Dialog
+        open={!!editTarget}
+        onOpenChange={(v) => !v && !updatingItem && setEditTarget(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("stockCounts.editItem", { defaultValue: "Edit Count" })}
+            </DialogTitle>
+          </DialogHeader>
+          {editTarget && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {editTarget.variant?.variantName} —{" "}
+                <span className="font-mono text-xs">
+                  {editTarget.batch?.batchNumber}
+                </span>
+              </p>
+              <div className="space-y-1.5">
+                <Label required>{t("stockCounts.countedQuantity")}</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={editCountedQuantity}
+                  onChange={(e) => setEditCountedQuantity(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>
+                  {t("stockCounts.notes", { defaultValue: "Notes" })}
+                </Label>
+                <Input
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                />
+              </div>
+              {editError && <p className="text-xs text-danger">{editError}</p>}
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setEditTarget(null)}
+              disabled={updatingItem}
+            >
+              {t("common:actions.cancel")}
+            </Button>
+            <Button onClick={handleEditSave} loading={updatingItem}>
+              {t("common:actions.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Cancel confirm dialog */}
       <ConfirmActionDialog

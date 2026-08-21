@@ -34,7 +34,6 @@ const CATEGORIES = [
   "pharmacy",
   "purchasing",
   "queue",
-  "ai_insight",
 ] as const;
 type Cat = (typeof CATEGORIES)[number];
 

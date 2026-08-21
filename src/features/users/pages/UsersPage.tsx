@@ -291,6 +291,12 @@ export default function UsersPage() {
           isFetching={isFetching}
           rowKey={(r) => r.id}
           onPageChange={setPage}
+          onRowClick={(r) => {
+            const isSelf = currentUser?.id === r.id;
+            const isSuperAdmin = r.role?.isSuperAdmin === true;
+            if (isSelf || isSuperAdmin) return;
+            navigate(`/users/${r.id}`);
+          }}
         />
       )}
 

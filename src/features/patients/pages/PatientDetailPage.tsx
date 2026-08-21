@@ -15,7 +15,8 @@ import { Skeleton } from "@/components/primitive/skeleton";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { formatDate, formatDateTime } from "@/lib/formatters";
 import AppPageHeader from "@/components/shared/AppPageHeader";
-
+import { Button } from "@/components/primitive/button";
+import { Printer } from "lucide-react";
 export default function PatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation("patients");
@@ -60,6 +61,17 @@ export default function PatientDetailPage() {
       <AppPageHeader
         title={patient.fullName}
         subtitle={`Patient ID: ${patient.patientId}`}
+        actions={
+          <Button
+            variant="outline"
+            onClick={() =>
+              window.open(`/patients/${patient.id}/print`, "_blank")
+            }
+          >
+            <Printer className="size-4" />
+            {t("print.printHistory", { defaultValue: "Print History" })}
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
