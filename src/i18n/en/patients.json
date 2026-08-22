@@ -1,4 +1,15 @@
 {
+  "print": {
+    "printHistory": "Print History",
+    "title": "Patient Medical History",
+    "patientInformation": "Patient Information",
+    "medicalHistory": "Medical History",
+    "visits": "Visits",
+    "prescriptions": "Prescriptions",
+    "medication": "Medication",
+    "qty": "Prescribed / Dispensed",
+    "confidential": "Confidential — for authorized medical personnel only."
+  },
   "title": "Patients",
   "register": "Register Patient",
   "profile": "Patient Profile",

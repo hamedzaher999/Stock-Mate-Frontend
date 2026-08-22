@@ -17,10 +17,22 @@
     "noRolesFound": "لم يتم العثور على أدوار.",
     "namePlaceholder": "مثال: lab_technician",
     "nameHint": "أحرف صغيرة وشرطات سفلية، مثال: \"lab_technician\".",
-    "nameFormatError": "يجب أن يكون الاسم بأحرف صغيرة وشرطات سفلية ويبدأ بحرف (مثال: \"lab_technician\")."
+    "nameFormatError": "يجب أن يكون الاسم بأحرف صغيرة وشرطات سفلية ويبدأ بحرف (مثال: \"lab_technician\").",
+    "roleNames": {
+      "hospital_manager": "مدير المستشفى",
+      "warehouse_manager": "مدير المستودع",
+      "purchasing_manager": "مدير المشتريات",
+      "reception_staff": "موظف الاستقبال",
+      "doctor": "طبيب",
+      "department_manager": "مدير القسم",
+      "pharmacy_staff": "موظف الصيدلية",
+      "disposal_manager": "مدير الإتلاف",
+      "super_admin": "المدير العام"
+    }
   },
   "permissions": {
     "title": "الصلاحيات",
+
     "categories": {
       "departments": "الأقسام",
       "accounts": "الحسابات",
@@ -28,13 +40,75 @@
       "catalog": "الكتالوج",
       "inventory": "المخزون",
       "patients": "المرضى",
-      "queue": "الانتظار",
+      "queue": "قائمة الانتظار",
       "consultations": "الاستشارات",
-      "prescriptions": "الوصفات",
+      "prescriptions": "الوصفات الطبية",
       "pharmacy": "الصيدلية",
       "purchasing": "المشتريات",
-      "refills": "طلبات التعبئة",
-      "reports": "التقارير"
+      "refills": "طلبات تزويد الأقسام",
+      "reports": "التقارير",
+      "ai": "رؤى الذكاء الاصطناعي",
+      "disposal": "الإتلاف"
+    },
+
+    "codes": {
+      "manage_departments": "إدارة الأقسام",
+      "manage_accounts": "إدارة الحسابات",
+      "manage_roles": "إدارة الأدوار",
+      "manage_user_permissions": "إدارة صلاحيات المستخدمين",
+      "manage_doctors": "إدارة الأطباء",
+
+      "manage_materials": "إدارة المواد",
+      "manage_department_materials": "إدارة مواد الأقسام",
+      "manage_units": "إدارة وحدات القياس",
+      "manage_categories": "إدارة التصنيفات",
+      "manage_suppliers": "إدارة الموردين",
+      "manage_material_suppliers": "إدارة موردي المواد",
+
+      "create_purchase_request": "إنشاء طلب شراء",
+      "approve_purchase_request_hospital": "الموافقة على طلب الشراء — المستشفى",
+      "approve_purchase_request_manager": "الموافقة على طلب الشراء — المدير",
+      "receive_purchase": "استلام المشتريات",
+      "confirm_purchase_receipt": "تأكيد استلام المشتريات",
+      "view_purchasing_history": "عرض سجل المشتريات",
+      "view_purchasing_reports": "عرض تقارير المشتريات",
+
+      "create_department_refill_request": "إنشاء طلب تزويد للقسم",
+      "approve_department_refill_request_hospital": "الموافقة على طلب تزويد القسم — المستشفى",
+      "approve_department_refill_request_manager": "الموافقة على طلب تزويد القسم — المدير",
+      "prepare_department_refill": "تجهيز طلب تزويد القسم",
+      "confirm_department_delivery": "تأكيد تسليم الطلب للقسم",
+
+      "view_inventory": "عرض المخزون",
+      "transfer_inventory": "نقل المخزون",
+      "perform_inventory_adjustment": "إجراء تسوية للمخزون",
+      "perform_stock_count": "إجراء جرد المخزون",
+      "record_department_consumption": "تسجيل استهلاك القسم",
+
+      "add_patient": "إضافة مريض",
+      "view_patients": "عرض المرضى",
+      "view_patient_history": "عرض سجل المريض",
+      "manage_department_queue": "إدارة قائمة انتظار القسم",
+      "cancel_visit": "إلغاء الزيارة",
+
+      "start_consultation": "بدء الاستشارة",
+      "create_prescription": "إنشاء وصفة طبية",
+      "renew_prescription": "تجديد الوصفة الطبية",
+      "cancel_prescription": "إلغاء الوصفة الطبية",
+      "manage_all_prescriptions": "إدارة جميع الوصفات الطبية",
+
+      "dispense_prescription": "صرف الوصفة الطبية",
+
+      "view_reports": "عرض التقارير",
+      "view_ai_insights": "عرض رؤى الذكاء الاصطناعي",
+      "review_ai_insights": "مراجعة رؤى الذكاء الاصطناعي",
+      "manage_periodic_refill_schedules": "إدارة جداول التزويد الدورية",
+
+      "view_disposal": "عرض الإتلاف",
+      "manage_disposal_transfers": "إدارة عمليات نقل المواد للإتلاف",
+      "manage_destinations": "إدارة الوجهات",
+      "create_disposal_sale_request": "إنشاء طلب بيع المواد المتلفة",
+      "approve_disposal_sale_request": "الموافقة على طلب بيع المواد المتلفة"
     }
   },
   "overrides": {

@@ -4,14 +4,6 @@ import { Switch } from "@/components/primitive/switch";
 import { Label } from "@/components/primitive/label";
 import { Input } from "@/components/primitive/input";
 import { Button } from "@/components/primitive/button";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/primitive/select";
 import {
   Card,
   CardContent,
@@ -151,22 +143,6 @@ export default function SettingsPage() {
           <CardTitle>{t("regional")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>{t("currency")}</Label>
-            <Select
-              value={store.currency}
-              onValueChange={(v) => store.setCurrency(v as "ILS" | "USD")}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ILS">ILS (₪)</SelectItem>
-                <SelectItem value="USD">USD ($)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="space-y-2">
             <Label>{t("language")}</Label>
             <div className="flex gap-2">

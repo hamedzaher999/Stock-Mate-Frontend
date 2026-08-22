@@ -1,4 +1,15 @@
 {
+  "print": {
+    "printHistory": "طباعة السجل الطبي",
+    "title": "السجل الطبي للمريض",
+    "patientInformation": "معلومات المريض",
+    "medicalHistory": "السجل الطبي",
+    "visits": "الزيارات",
+    "prescriptions": "الوصفات الطبية",
+    "medication": "الدواء",
+    "qty": "الموصوف / المصروف",
+    "confidential": "سري — للاستخدام من قبل الكادر الطبي المخول فقط."
+  },
   "title": "المرضى",
   "register": "تسجيل مريض",
   "profile": "ملف المريض",

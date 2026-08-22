@@ -17,10 +17,22 @@
     "noRolesFound": "No roles found.",
     "namePlaceholder": "e.g. lab_technician",
     "nameHint": "Lowercase snake_case, e.g. \"lab_technician\".",
-    "nameFormatError": "Name must be lowercase snake_case, starting with a letter (e.g. \"lab_technician\")."
+    "nameFormatError": "Name must be lowercase snake_case, starting with a letter (e.g. \"lab_technician\").",
+    "roleNames": {
+      "hospital_manager": "Hospital Manager",
+      "warehouse_manager": "Warehouse Manager",
+      "purchasing_manager": "Purchasing Manager",
+      "reception_staff": "Reception Staff",
+      "doctor": "Doctor",
+      "department_manager": "Department Manager",
+      "pharmacy_staff": "Pharmacy Staff",
+      "disposal_manager": "Disposal Manager",
+      "super_admin": "Super Admin"
+    }
   },
   "permissions": {
     "title": "Permissions",
+
     "categories": {
       "departments": "Departments",
       "accounts": "Accounts",
@@ -34,7 +46,69 @@
       "pharmacy": "Pharmacy",
       "purchasing": "Purchasing",
       "refills": "Department Refills",
-      "reports": "Reports"
+      "reports": "Reports",
+      "ai": "AI Insights",
+      "disposal": "Disposal"
+    },
+
+    "codes": {
+      "manage_departments": "Manage Departments",
+      "manage_accounts": "Manage Accounts",
+      "manage_roles": "Manage Roles",
+      "manage_user_permissions": "Manage User Permissions",
+      "manage_doctors": "Manage Doctors",
+
+      "manage_materials": "Manage Materials",
+      "manage_department_materials": "Manage Department Materials",
+      "manage_units": "Manage Units",
+      "manage_categories": "Manage Categories",
+      "manage_suppliers": "Manage Suppliers",
+      "manage_material_suppliers": "Manage Material Suppliers",
+
+      "create_purchase_request": "Create Purchase Request",
+      "approve_purchase_request_hospital": "Approve Purchase Request — Hospital",
+      "approve_purchase_request_manager": "Approve Purchase Request — Manager",
+      "receive_purchase": "Receive Purchase",
+      "confirm_purchase_receipt": "Confirm Purchase Receipt",
+      "view_purchasing_history": "View Purchasing History",
+      "view_purchasing_reports": "View Purchasing Reports",
+
+      "create_department_refill_request": "Create Department Refill Request",
+      "approve_department_refill_request_hospital": "Approve Department Refill Request — Hospital",
+      "approve_department_refill_request_manager": "Approve Department Refill Request — Manager",
+      "prepare_department_refill": "Prepare Department Refill",
+      "confirm_department_delivery": "Confirm Department Delivery",
+
+      "view_inventory": "View Inventory",
+      "transfer_inventory": "Transfer Inventory",
+      "perform_inventory_adjustment": "Perform Inventory Adjustment",
+      "perform_stock_count": "Perform Stock Count",
+      "record_department_consumption": "Record Department Consumption",
+
+      "add_patient": "Add Patient",
+      "view_patients": "View Patients",
+      "view_patient_history": "View Patient History",
+      "manage_department_queue": "Manage Department Queue",
+      "cancel_visit": "Cancel Visit",
+
+      "start_consultation": "Start Consultation",
+      "create_prescription": "Create Prescription",
+      "renew_prescription": "Renew Prescription",
+      "cancel_prescription": "Cancel Prescription",
+      "manage_all_prescriptions": "Manage All Prescriptions",
+
+      "dispense_prescription": "Dispense Prescription",
+
+      "view_reports": "View Reports",
+      "view_ai_insights": "View AI Insights",
+      "review_ai_insights": "Review AI Insights",
+      "manage_periodic_refill_schedules": "Manage Periodic Refill Schedules",
+
+      "view_disposal": "View Disposal",
+      "manage_disposal_transfers": "Manage Disposal Transfers",
+      "manage_destinations": "Manage Destinations",
+      "create_disposal_sale_request": "Create Disposal Sale Request",
+      "approve_disposal_sale_request": "Approve Disposal Sale Request"
     }
   },
   "overrides": {

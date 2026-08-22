@@ -1,8 +1,8 @@
 {
   "title": "Assistant",
-  "pageSubtitle": "Ask about patients, inventory, requests, or anything else in the system.",
+  "pageSubtitle": "Ask about anything in the system.",
   "emptyTitle": "How can I help?",
-  "emptyDescription": "Ask me anything about the hospital system — inventory levels, request statuses, or how to do something.",
+  "emptyDescription": "Ask me anything about the hospital system, or how to do something.",
   "inputPlaceholder": "Type a message...",
   "errorGeneric": "Something went wrong. Please try again."
 }

@@ -58,6 +58,7 @@ export const PERMISSIONS = {
   MANAGE_DESTINATIONS: "manage_destinations",
   CREATE_DISPOSAL_SALE_REQUEST: "create_disposal_sale_request",
   APPROVE_DISPOSAL_SALE_REQUEST: "approve_disposal_sale_request",
-} as const;
+  PRINT_PATIENT_HISTORY: "print_patient_history",
+};
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

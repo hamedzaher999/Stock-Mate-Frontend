@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
-import { Activity, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/app/hooks";
 import { useUiStore } from "@/stores/ui.store";
@@ -11,7 +11,7 @@ import {
   TooltipContent,
 } from "@/components/primitive/tooltip";
 import { Sheet, SheetContent } from "@/components/primitive/sheet";
-
+import logo from "../../asset/logo.png";
 /* ── shared inner content ─────────────────────────────────── */
 
 function SidebarNavContent({
@@ -41,7 +41,8 @@ function SidebarNavContent({
         )}
       >
         <div className="bg-primary/10 rounded-xl p-2 shrink-0">
-          <Activity className="size-5 text-primary" />
+          {/* <Activity className="size-5 text-primary" /> */}
+          <img src={logo} alt="" className="w-10" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">

@@ -27,6 +27,7 @@ import type { Role, Permission } from "@/lib/apiTypes";
 
 export default function RolesPage() {
   const { t } = useTranslation("rbac");
+
   const { data: rolesData, isLoading: rolesLoading } = useGetRolesQuery();
   const { data: permsData, isLoading: permsLoading } = useGetPermissionsQuery();
   const [setPerms, { isLoading: saving }] = useSetRolePermissionsMutation();
@@ -76,12 +77,10 @@ export default function RolesPage() {
     });
   };
 
-  // Create role dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
   const [newRoleDescription, setNewRoleDescription] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
-
   const NAME_PATTERN = /^[a-z][a-z0-9_]*$/;
 
   async function handleCreateRole() {
@@ -136,20 +135,29 @@ export default function RolesPage() {
                 {t("roles.noRolesFound")}
               </p>
             ) : (
-              filteredRoles.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => setSelectedRole(r)}
-                  className={`w-full text-start px-3 py-2 rounded-md text-sm transition-colors ${selectedRole?.id === r.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-                >
-                  {r.name}
-                  {r.isSystem && (
-                    <Badge className="ml-2 text-xs py-0" variant="neutral">
-                      {t("roles.system")}
-                    </Badge>
-                  )}
-                </button>
-              ))
+              filteredRoles.map((r) => {
+                const roleNameKey = `roles.roleNames.${r.name}`;
+                const displayName = t(roleNameKey, { defaultValue: r.name });
+
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => setSelectedRole(r)}
+                    className={`w-full text-start px-3 py-2 rounded-md text-sm transition-colors ${
+                      selectedRole?.id === r.id
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    {displayName}
+                    {r.isSystem && (
+                      <Badge className="ml-2 text-xs py-0" variant="neutral">
+                        {t("roles.system")}
+                      </Badge>
+                    )}
+                  </button>
+                );
+              })
             )}
           </div>
         </div>
@@ -169,10 +177,15 @@ export default function RolesPage() {
                   {selectedRole.description}
                 </p>
               )}
+
+              {/* 10. Translate Categories and Permission Names */}
               {Object.entries(grouped).map(([cat, perms]) => (
                 <div key={cat}>
                   <h3 className="text-sm font-semibold capitalize mb-2 text-muted-foreground">
-                    {cat.replace(/_/g, " ")}
+                    {/* Use the category code as a key in rbac.json permissions.categories */}
+                    {t(`permissions.categories.${cat}`, {
+                      defaultValue: cat.replace(/_/g, " "),
+                    })}
                   </h3>
                   <div className="grid grid-cols-2 gap-2">
                     {perms.map((p) => (
@@ -185,15 +198,22 @@ export default function RolesPage() {
                           onCheckedChange={() => toggle(p.code)}
                           disabled={selectedRole.isSuperAdmin === true}
                         />
-                        <span>{p.name}</span>
+                        <span>
+                          {/* Use the permission code as a key in rbac.json permissions.codes */}
+                          {t(`permissions.codes.${p.code}`, {
+                            defaultValue: p.name,
+                          })}
+                        </span>
                       </label>
                     ))}
                   </div>
                 </div>
               ))}
+
               {!selectedRole.isSuperAdmin && (
                 <Button onClick={handleSave} disabled={saving}>
-                  <Save className="size-4 mr-2" /> {t("roles.savePermissions")}
+                  <Save className="size-4 mr-2" />{" "}
+                  {t("roles.savePermissions")}{" "}
                 </Button>
               )}
             </div>

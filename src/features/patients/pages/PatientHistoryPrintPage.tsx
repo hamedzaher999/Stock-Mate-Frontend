@@ -72,8 +72,6 @@ export default function PatientHistoryPrintPage() {
 
   return (
     <div className="print-page">
-      {/* Print-only styles: screen preview shows the A4 sheet centered on a
-          gray backdrop; @media print strips all of that to just the page. */}
       <style>{`
         @page { size: A4; margin: 14mm; }
         html, body { background: #e5e7eb; }

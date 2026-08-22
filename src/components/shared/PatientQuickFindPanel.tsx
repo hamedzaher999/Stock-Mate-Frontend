@@ -155,7 +155,7 @@ export default function PatientQuickFindPanel({
       </div>
 
       {mode === "id" && (
-        <div className="space-y-2">
+        <div className="space-y-2 py-3">
           <div className="flex gap-2 flex-wrap">
             <Select
               value={lookupField}
@@ -278,7 +278,7 @@ export default function PatientQuickFindPanel({
       )}
 
       {mode === "name" && (
-        <div className="space-y-2">
+        <div className="space-y-2 py-3 px-2">
           <Input
             autoFocus
             value={nameSearch}
