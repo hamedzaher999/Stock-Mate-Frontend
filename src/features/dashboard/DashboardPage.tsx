@@ -72,12 +72,13 @@ function KpiCard({
     </Link>
   );
 }
-
 export default function DashboardPage() {
   const currentUser = useCurrentUser();
   const { t } = useTranslation("dashboard");
   const canManageQueue = usePermission(PERMISSIONS.MANAGE_DEPARTMENT_QUEUE);
   const canViewPurchasing = usePermission(PERMISSIONS.VIEW_PURCHASING_HISTORY);
+  const canViewPatients = usePermission(PERMISSIONS.VIEW_PATIENTS);
+  const canViewInventory = usePermission(PERMISSIONS.VIEW_INVENTORY);
   const canViewRefills = useHasAny([
     PERMISSIONS.CREATE_DEPARTMENT_REFILL_REQUEST,
     PERMISSIONS.APPROVE_DEPARTMENT_REFILL_REQUEST_MANAGER,
@@ -104,7 +105,12 @@ export default function DashboardPage() {
   );
 
   const quickLinks = [
-    { label: t("links.patients"), path: "/patients", icon: Users, show: true },
+    {
+      label: t("links.patients"),
+      path: "/patients",
+      icon: Users,
+      show: canViewPatients,
+    },
     {
       label: t("links.queueBoard"),
       path: "/queue",
@@ -115,7 +121,7 @@ export default function DashboardPage() {
       label: t("links.liveStock"),
       path: "/inventory/live-stock",
       icon: Package,
-      show: true,
+      show: canViewInventory,
     },
     {
       label: t("links.purchaseRequests"),
